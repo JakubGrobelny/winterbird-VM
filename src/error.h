@@ -5,9 +5,12 @@
 
 typedef enum
 {
+	INIT_ERROR = -1,
 	NONE = 0,
 	STACK_OVERFLOW,
-	STACK_UNDERFLOW
+	STACK_UNDERFLOW,
+	INVALID_OPCODE,
+	INVALID_OPERAND_TYPE
 
 } error_flag_t;
 

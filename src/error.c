@@ -21,15 +21,16 @@ inline void throw_error()
 	switch (error.flag)
 	{
 		case STACK_OVERFLOW:
-			printf("STACK_OVERFLOW");
+			fprintf(stderr, "STACK_OVERFLOW");
 			break;
 		case STACK_UNDERFLOW:
-			printf("STACK_UNDERFLOW");
+			fprintf(stderr, "STACK_UNDERFLOW");
 			break;
 		case NONE:
-			printf("VM error - no error!");
+			fprintf(stderr, "VM error - no error!");
 			break;
 		default:
+			fprintf(stderr, "ERROR(nodescr)!");
 		break;
 	}
 

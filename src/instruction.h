@@ -6,7 +6,7 @@
 typedef enum
 {
 	//mem:
-	OP_MOV, OP_ALLOC, OP_FREE, OP_SWAP, OP_FOPEN, OP_FCLOSE,
+	OP_MOV, OP_ALLOC, OP_FREE, OP_SWAP, OP_FOPEN, OP_FCLOSE, OP_PUSH, OP_POP,
 	//alu:
 	OP_FTOI, OP_ITOF, // casts
 	OP_ADD, OP_SUB, OP_NEG, OP_MUL, OP_DIV, OP_MOD, OP_ROR, OP_ROL, OP_SHR, OP_SHL, // signed integer
@@ -15,11 +15,14 @@ typedef enum
 	OP_AND, OP_OR, OP_XOR, OP_NOT, // logical
 	OP_BSET, OP_BCLR, OP_DEC, OP_INC, // other
 	//test:
-	OP_NTEST, OP_STEST, OP_GTEST, OP_CMPNZ, OP_CMPG, OP_CMPL, OP_CMPEQ,
+	OP_NTEST, OP_STEST, OP_GTEST, 
+	OP_CMPZ, OP_CMPG, OP_CMPL, OP_CMPEQ, // signed
+	OP_CMPFZ, OP_CMPFG, OP_CMPFL, OP_CMPFEQ, OP_CMPFI, OP_CMPFN, // float
+	OP_CMPUL, OP_CMPUG,// unsigned
 	//branch:
 	OP_JMP, OP_JIF, OP_CALL, OP_RET,
 	// other:
-	OP_SYSCALL, OP_DEBUG
+	OP_SYSCALL, OP_DEBUG, OP_HALT
 	 
 	/*
 	Memory:
@@ -33,6 +36,8 @@ typedef enum
 		swap {LOCATION, LOCATION} 	- swaps the contents of two operands
 		fopen {REG, NAME}			- opens file indicated by second operand and stores pointer in first
 		fclose {REG}				- closes file pointed by operand
+		push {REG}
+		pop  {REG}
 
 	ALU:
 
@@ -54,10 +59,18 @@ typedef enum
 		ntest				- negates the value of test flag
 		stest	{VAL}		- sets the value of test flag to given value
 		gtest   {VAL}		- sets the value to value of test flag
-		cmpnz 	{VAL}		- sets test flag if operand is not zero
+		cmpz 	{VAL}		- sets test flag if operand is zero
 		cmpeq   {VAL, VAL}	- sets test flag if operands are equal
 		cmpg  	{VAL, VAL}	- sets test flag if first operand is greater
-		cmpl  	{VAL, VAL}	- sets test flag if first operand is smaller
+		cmpl  	{VAL, VAL}	- sets test flag if first operand is lesser
+		cmpfz	{VAL}		- sets test flag if float is zero
+		cmpfi	{VAL}		- sets test flag if float is INF
+		cmpfn	{VAL}		- sets test flag if float is NaN
+		cmpfeq	{VAL, VAL}	- sets test if floats are equal
+		cmpfg	{VAL, VAL}	- sets test if first float is greater
+		cmpfl	{VAL, VAL}  - sets test if first float is lesser
+		cmpul	{VAL, VAL}  - sets test flag if first unsigned is lesser
+		cmpug   {VAL, VAL}  - sets test flag if first unsigned is lesser
 
 	Branch:
 
@@ -65,6 +78,7 @@ typedef enum
 		jif 	{ADDRESS} 		- jumps if test flag is set
 		call 	{ADDRESS} 		- saves instruction pointer to the stack
 		ret 	{} 				- jumps to the address from the stack
+		halt    {VAL}			- quits the program with given code
 
 	Special:
 
@@ -81,13 +95,14 @@ typedef enum
 		%reg,							- AM_REG
 		$imm,							- AM_IMMEDIATE
 		*(%reg + %idx * $scale + $imm)	- AM_REG_DEREF
-		*($imm)							- AMM_IMM_DEREF
+		*($imm)							- AMM_IMM_DEREF //ONLY FOR .DATA
 	*/
 
+	AM_NONE,
 	AM_REG,
 	AM_REG_DEREF,
 	AM_IMM,
-	AM_IMM_DEREF
+	AM_IMM_DEREF // ONLY FOR ACCESSING .DATA
 
 } addr_mode_t;
 
@@ -95,18 +110,31 @@ typedef struct
 {
 	value_t 		immediate;
 	addr_mode_t 	type;
-	uint8_t 		base_reg;
-	uint8_t 		index_reg;
+	reg_id_t 		base_reg;
+	reg_id_t 		index_reg;
 	uint8_t 		scale;
 
 } operand_t;
 
 typedef struct
 {
-	opcode_t 	op;
-	word_size_t size;
 	operand_t 	operands[2];
+	opcode_t 	instr;
+	word_size_t size;
 
 } instruction_t;
+
+const int sz = sizeof(instruction_t);
+
+operand_t create_empty_operand();
+operand_t create_operand(addr_mode_t type, 
+						 reg_id_t reg, 
+						 reg_id_t idx_reg, 
+						 value_t imm, 
+						 uint8_t scale);
+instruction_t create_instruction(opcode_t instr, 
+								 word_size_t size, 
+								 operand_t op1, 
+								 operand_t op2);
 
 #endif
