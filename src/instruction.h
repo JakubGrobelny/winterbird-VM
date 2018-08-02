@@ -6,7 +6,7 @@
 typedef enum
 {
 	//mem:
-	OP_MOV, OP_ALLOC, OP_FREE, OP_SWAP, OP_FOPEN, OP_FCLOSE, OP_PUSH, OP_POP,
+	OP_MOV, OP_ALLOC, OP_FREE, OP_SWAP, OP_FOPEN, OP_FCLOSE, OP_FREADB, OP_PUSH, OP_POP,
 	//alu:
 	OP_FTOI, OP_ITOF, // casts
 	OP_ADD, OP_SUB, OP_NEG, OP_MUL, OP_DIV, OP_MOD, OP_ROR, OP_ROL, OP_SHR, OP_SHL, // signed integer
@@ -29,13 +29,15 @@ typedef enum
 
 		//lw {REG, ADDRESS} 		- loads a word to register from address
 		//sw {ADDRESS, REG} 		- stores a word at an address from given register
-		mov {REG, REG}	  			- copies a value from second register to first register
+		mov {REG, REG}	  			- copies a value from second register to first register, MUST SPECIFY SIZE
 		alloc {ADDRESS, UINT32}	 	- allocates memory of size given as second operand 
 										and stores the pointer in first operand
 		free {ADDRESS}				- frees allocated memory at pointer from operand address
 		swap {LOCATION, LOCATION} 	- swaps the contents of two operands
-		fopen {REG, NAME}			- opens file indicated by second operand and stores pointer in first
+		fopen {REG, NAME}			- opens file indicated by second operand and stores pointer in first, 
+										mode to be used when opening should be given in first register
 		fclose {REG}				- closes file pointed by operand
+		freadb {REG}, {REG}			- reads byte from file from first register and stores it in second register
 		push {REG}
 		pop  {REG}
 
@@ -74,16 +76,18 @@ typedef enum
 
 	Branch:
 
+		//NOTE: jump address should be actual_address - 1.
+		//NOTE: addresses are absolute.
 		jmp 	{ADDRESS} 		- always jumps
 		jif 	{ADDRESS} 		- jumps if test flag is set
 		call 	{ADDRESS} 		- saves instruction pointer to the stack
 		ret 	{} 				- jumps to the address from the stack
-		halt    {VAL}			- quits the program with given code
 
 	Special:
 
+		halt    {VAL}		 - quits the program with given code
 		syscall {ID} 		 - calls syscall
-		debug		 		 - halts the program and prints stack and registers
+		debug	{FLAG}	 	 - halts the program and prints stack and registers
 
 	*/
 

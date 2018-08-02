@@ -99,7 +99,7 @@ bool load_program(memory_t* memory, char* path)
 
 	fread(&program->data_size, sizeof(size_t), 1, file);
 
-	program->data = malloc(sizeof(program->data_size));
+	program->data = malloc(program->data_size);
 
 	if (!program->data)
 	{
@@ -112,7 +112,7 @@ bool load_program(memory_t* memory, char* path)
 	const size_t instruction_length = sizeof(instruction_t);
 	size_t text_capacity = 1;
 	program->text_size = 0;
-	program->text = malloc(sizeof(text_capacity));
+	program->text = malloc(text_capacity);
 
 	if (!program->text)
 	{
@@ -127,7 +127,7 @@ bool load_program(memory_t* memory, char* path)
 		if (program->text_size >= text_capacity)
 		{
 			text_capacity *= 2;
-			program->text = realloc(program->text, sizeof(text_capacity));
+			program->text = realloc(program->text, text_capacity);
 
 			if (!program->text)
 			{
@@ -140,4 +140,50 @@ bool load_program(memory_t* memory, char* path)
 	}
 
 	return true;
+}
+
+void print_stack_trace(memory_t* memory, uint32_t what)
+{
+	const uint32_t reg   = 0x1;
+	const uint32_t stack = 0x10;
+	const uint32_t data  = 0x100;
+	const uint32_t text  = 0x1000;
+
+	if (what & reg)
+	{
+		fprintf(stderr, "REGISTERS:\n");
+		for (size_t i = 0; i < REG_NUMBER; i++)
+			fprintf(stderr, "REG[**%d]: %llx\n", i, memory->registers[i]);
+		fprintf(stderr, "\n");
+	}
+	if (what & stack)
+	{
+		fprintf(stderr, "STACK:\n");
+		uint32_t* address = (void*)memory->stack;
+
+		while (address != memory->stack_ptr)
+			fprintf("%lld: %x %x\n", address, *address++, *address);
+		fprintf(stderr, "\n");
+	}
+	if (what & data)
+	{
+		fprintf(stderr, "DATA:\n");
+		uint32_t* address = (void*)memory->program_data.data;
+
+		while (address != memory->program_data.data + memory->program_data.data_size)
+			fprintf("%lld: %x %x\n", address, *address++, *address);
+		fprintf(stderr, "\n");
+	}
+	if (what & text)
+	{
+		fprintf(stderr, "TEXT:\n");
+
+		for (size_t i = 0; i < memory->program_data.text_size; i++)
+		{
+			instruction_t* instr = &memory->program_data.text[i];
+
+			//FIXME:
+			fprintf("%llx: %x", i, instr->instr);
+		}
+	}
 }
