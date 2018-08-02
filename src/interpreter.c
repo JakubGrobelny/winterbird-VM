@@ -97,6 +97,87 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 			op1->u64 = stack_pop(memory, instruction->size).u64;
 			break;
 	// === ALU === //
+		// signed
+		case OP_ADD:
+			op1->i64 += op2->i64;
+			break;
+		case OP_SUB:
+			op1->i64 -= op2->i64;
+			break;
+		case OP_NEG:
+			op1->i64 = -op2->i64;
+			break;
+		case OP_MUL:
+			op1->i64 *= op2->i64;
+			break;
+		case OP_DIV:
+			if (op2->i64)
+				op1->i64 /= op2->i64;
+			else
+				report_error(DIVISION_BY_ZERO, NULL);
+			break;
+		case OP_MOD:
+			if (op2->i64)
+				op1->i64 %= op2->i64;
+			else
+				report_error(DIVISION_BY_ZERO, NULL);
+			break;
+		case OP_ROR:
+			asm("rorq %0, %1"
+				:"=r"(op1->u64)
+				:"r"(op2->u64)
+				:);
+			break;
+		case OP_ROL:
+			asm("rolq %0, %1"
+				:"=r"(op1->u64)
+				:"r"(op2->u64)
+				:);
+			break;
+		case OP_SHR:
+			op1->i64 >>= op2->u64;
+			break;
+		case OP_SHL:
+			op1->i64 <<= op2->u64;
+			break;
+		// unsigned
+		case OP_UMUL:
+			op1->u64 *= op2->u64;
+			break;
+		case OP_UDIV:
+			if (op2->u64)
+				op1->u64 /= op2->u64;
+			else
+				report_error(DIVISION_BY_ZERO, NULL);
+			break;
+		case OP_UMOD:
+			if (op2->u64)
+				op1->u64 %= op2->u64;
+			else
+				report_error(DIVISION_BY_ZERO, NULL);
+			break;
+		case OP_USHR:
+			op1->u64 >>= op2->u64;
+			break;
+		case OP_USHL:
+			op1->u64 <<= op2->u64;
+			break;
+		// float
+		case OP_FADD:
+			op1->f64 += op2->f64;
+			break;
+		case OP_FSUB:
+			op1->f64 -= op2->f64;
+			break;
+		case OP_FNEG:
+			op1->f64 = -op2->f64;
+			break;
+		case OP_FMUL:
+			op1->f64 *= op2->f64;
+			break;
+		case OP_FDIV:
+			op1->f64 /= op2->f64;
+			break;
 		// casts
 		case OP_FTOI:
 			op1->i64 = (int64_t)op2->f64;
@@ -105,6 +186,18 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 			op1->f64 = (double)op2->i64;
 			break;
 		// logical
+		case OP_AND:
+			op1->u64 &= op2->u64;
+			break;
+		case OP_OR:
+			op1->u64 |= op2->u64;
+			break;
+		case OP_XOR:
+			op1->u64 ^= op2->u64;
+			break;
+		case OP_NOT:
+			op1->u64 = ~op2->u64;
+			break;
 		// other
 		case OP_BSET:
 			op1->u64 |= (uint64_t)1 << op2->u64;

@@ -26,8 +26,11 @@ inline void throw_error()
 		case STACK_UNDERFLOW:
 			fprintf(stderr, "STACK_UNDERFLOW");
 			break;
+		case DIVISION_BY_ZERO:
+			fprintf(stderr, "DIVISION_BY_ZERO");
+			break;
 		case NONE:
-			fprintf(stderr, "VM error - no error!");
+			fprintf(stderr, "no error!");
 			break;
 		default:
 			fprintf(stderr, "ERROR(nodescr)!");
