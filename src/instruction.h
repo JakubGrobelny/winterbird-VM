@@ -128,8 +128,6 @@ typedef struct
 
 } instruction_t;
 
-const int sz = sizeof(instruction_t);
-
 operand_t create_empty_operand();
 operand_t create_operand(addr_mode_t type, 
 						 reg_id_t reg, 

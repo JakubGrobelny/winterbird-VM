@@ -7,6 +7,8 @@ void run_bytecode(memory_t* memory)
 {
 	while (!memory->halt)
 	{
+		run_instruction(memory, &memory->program_data.text[memory->instr_ptr]);
+
 		if (was_error())
 			throw_error();
 
@@ -44,11 +46,13 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 			}
 			break;
 		case OP_SWAP:
+		{
 			value_t temp;
 			temp.u64 = op1->u64;
 			op1->u64 = op2->u64;
 			op2->u64 = temp.u64;
 			break;
+		}
 		// dynamic allocation
 		case OP_ALLOC:
 			op1->ptr = malloc(op2->u64);
@@ -58,6 +62,7 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 			break;
 		// files
 		case OP_FOPEN:
+		{
 			//TODO:
 			//create a registry of opened files and close them in case of a crash
 			char* mode;
@@ -83,11 +88,14 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 			FILE* file = fopen(op2->str, mode);
 			op1->ptr = (void*)file;
 			break;
+		}
 		case OP_FCLOSE:
 			fclose(op1->ptr);
 			break;
 		case OP_FREADB:
-			fread(&op2, 1, 1, op1->ptr);
+			//NOTE: sets test flag if failed to read
+			if(!fread(&op2, 1, 1, op1->ptr))
+				memory->test_flag = true;
 			break;
 		// stack
 		case OP_PUSH:
@@ -122,25 +130,19 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 			else
 				report_error(DIVISION_BY_ZERO, NULL);
 			break;
-		case OP_ROR:
-			asm("rorq %0, %1"
-				:"=r"(op1->u64)
-				:"r"(op2->u64)
-				:);
-			break;
-		case OP_ROL:
-			asm("rolq %0, %1"
-				:"=r"(op1->u64)
-				:"r"(op2->u64)
-				:);
-			break;
-		case OP_SHR:
-			op1->i64 >>= op2->u64;
-			break;
 		case OP_SHL:
 			op1->i64 <<= op2->u64;
 			break;
 		// unsigned
+		case OP_ROR:
+			op1->u64 = rotate_right(op1->u64, op2->u64);
+			break;
+		case OP_ROL:
+			op1->u64 = rotate_left(op1->u64, op2->u64);
+			break;
+		case OP_SHR:
+			op1->i64 >>= op2->u64;
+			break;
 		case OP_UMUL:
 			op1->u64 *= op2->u64;
 			break;
@@ -201,6 +203,7 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 		// other
 		case OP_BSET:
 			op1->u64 |= (uint64_t)1 << op2->u64;
+			break;
 		case OP_BCLR:
 			op1->u64 &= ~((uint64_t)1 << op2->u64);
 			break;
@@ -269,12 +272,16 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 		case OP_JIF:
 			memory->instr_ptr = memory->test_flag 
 							  ? memory->instr_ptr
-							  : op1->i64;
+							  : op1->u64;
 			break;
 		case OP_CALL:
-			stack_push(memory, (value_t)memory->instr_ptr, sizeof(memory->instr_ptr));
+		{
+			value_t pc;
+			pc.u64 = memory->instr_ptr;
+			stack_push(memory, pc, sizeof(memory->instr_ptr));
 			memory->instr_ptr = op1->i64;
 			break;
+		}
 		case OP_RET:
 			memory->instr_ptr = stack_pop(memory, sizeof(memory->instr_ptr)).i64;
 			break;
@@ -285,6 +292,7 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 			break;
 		case OP_SYSCALL:
 			//TODO: implement
+			assert(false && "OP_SYSCALL undefined");
 			break;
 		case OP_DEBUG:
 			print_stack_trace(memory, op1->u32);

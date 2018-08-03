@@ -1,5 +1,5 @@
 COMPILER = gcc
-FLAGS = -g -Wall -Wextra -std=c11 -O2 -pedantic-errors
+FLAGS = -g -Wall -Wextra -std=c11 -O0 -pedantic-errors
 
 TARGET = bin/wbvm
 
@@ -7,6 +7,7 @@ SRC = $(wildcard src/*.c)
 OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
 
 $(TARGET): $(OBJ)
+	$(RM) -rf bin
 	@mkdir bin
 	$(COMPILER) $(FLAGS) -o $(TARGET) $(OBJ)
 obj/%.o: src/%.c

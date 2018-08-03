@@ -1,5 +1,6 @@
 #include "error.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 error_t error = {NONE, NULL};
 
@@ -16,7 +17,7 @@ inline void report_error(error_flag_t flag, char* desc)
 
 inline void throw_error()
 {
-	print("Program exiting due to ");
+	fprintf(stderr, "Program exiting due to ");
 
 	switch (error.flag)
 	{

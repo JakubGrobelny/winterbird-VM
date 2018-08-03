@@ -1,5 +1,6 @@
 //#define NDEBUG
 #include "error.h"
+#include "util.h"
 
 #include <assert.h>
 
@@ -18,3 +19,5 @@ typedef uint8_t  	reg_id_t;
 #define NULL (void*)0
 
 #define MEGABYTE (uint64_t)1048576
+
+#define file_exit(n) {fclose(n); return false;}

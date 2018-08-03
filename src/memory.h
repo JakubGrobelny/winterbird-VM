@@ -13,7 +13,7 @@ typedef struct
 	byte_t*   stack;
 	size_t	  stack_size;
 	byte_t*	  stack_ptr;
-	byte_t*   stack_frame_ptr;
+	//byte_t*   stack_frame_ptr;
   
 	ptr_t	  instr_ptr;
 	uint64_t  test_flag;

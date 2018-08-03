@@ -15,5 +15,6 @@ typedef struct
 } program_t;
 
 void free_program(program_t* program);
+void init_empty_program(program_t* program);
 
 #endif
