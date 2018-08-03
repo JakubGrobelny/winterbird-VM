@@ -1,7 +1,7 @@
 # WBVM - Winterbird Virtual Machine
 
 ##What is it?
-wbvm is an interpreter for IR bytecode produced by Winterbird language compiler. It can also assemble, link and run programs written in wbASM (Winterbird assembler).
+wbvm is an interpreter for IR bytecode produced by Winterbird language compiler. It can (will in the future) also assemble, link and run programs written in wbASM (Winterbird assembler).
 
 ##What is Winterbird?
 Winterbird is a programming language, which is still in development.
@@ -22,7 +22,7 @@ Winterbird is a programming language, which is still in development.
 
     name operands - description
 
-    mov      X Y   - copies the content of Y to X. Has size variants.
+    mov      X Y   - copies the contents of Y to X. Has size variants.
     alloc    X Y   - dynamically allocates memory of size Y and stores 
                         the pointer in X.
     free     X     - frees dynamically allocated memory 
