@@ -6,7 +6,7 @@
 
 typedef struct
 {
-    byte_t* 	    data;
+    byte_t*         data;
     instruction_t*  text;
 
     size_t data_size;

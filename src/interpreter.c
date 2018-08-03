@@ -102,7 +102,7 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
             break;
         case OP_FREADB:
             //NOTE: sets test flag if failed to read
-            if(!fread(&op2, 1, 1, op1->ptr))
+            if(!fread(&op1, 1, 1, op2->ptr))
                 memory->test_flag = true;
             break;
         case OP_FWRITEB:
