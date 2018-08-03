@@ -1,0 +1,2 @@
+1. assembler + linker
+2. add OP_FWRITEB instruction (write byte)
