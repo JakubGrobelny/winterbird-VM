@@ -8,16 +8,16 @@
 
 typedef struct
 {
-	void*  ptr;
-	size_t size;
+    void*  ptr;
+    size_t size;
 
 } alloc_ptr_t;
 
 typedef struct
 {
-	alloc_ptr_t* ptrs;
-	size_t 		 capacity;
-	size_t 		 size;
+    alloc_ptr_t* ptrs;
+    size_t 		 capacity;
+    size_t 		 size;
 
 } alloc_array_t;
 

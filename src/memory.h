@@ -9,21 +9,21 @@
 
 typedef struct
 {
-	value_t registers[128];
+    value_t registers[128];
 
-	byte_t*   stack;
-	size_t	  stack_size;
-	byte_t*	  stack_ptr;
+    byte_t*   stack;
+    size_t	  stack_size;
+    byte_t*	  stack_ptr;
   
-	ptr_t	  instr_ptr;
-	uint64_t  test_flag;
+    ptr_t	  instr_ptr;
+    uint64_t  test_flag;
 
-	program_t program_data;
+    program_t program_data;
 
-	int32_t   return_value;
-	bool 	  halt;
+    int32_t   return_value;
+    bool 	  halt;
 
-	alloc_array_t allocated_ptrs;
+    alloc_array_t allocated_ptrs;
 
 } memory_t;
 
