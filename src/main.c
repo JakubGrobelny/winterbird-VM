@@ -25,6 +25,10 @@ int main(int argc, char* argv[])
 
 	run_bytecode(&memory);
 
+#ifndef NDEBUG
+	print_stack_trace(&memory, 5);
+#endif
+
 	free_memory(&memory);
 	return memory.return_value;
 }

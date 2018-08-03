@@ -12,7 +12,6 @@ bool initialize_memory(memory_t* memory, uint64_t stack_megabytes)
 	memory->stack = malloc(memory->stack_size);
 
 	memory->stack_ptr 		= memory->stack;
-	//memory->stack_frame_ptr = memory->stack;
 
 	memory->test_flag = 0;
 	memory->instr_ptr = 0;	
@@ -53,7 +52,6 @@ void free_memory(memory_t* memory)
 	free(memory->stack);
 	memory->stack_size = 0;
 	memory->stack_ptr = NULL;
-	//memory->stack_frame_ptr = NULL;
 	free_program(&memory->program_data);
 }
 
