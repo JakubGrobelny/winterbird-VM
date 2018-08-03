@@ -71,7 +71,7 @@ value_t* get_pointer_from_operand(memory_t* memory, instruction_t* instruction, 
             return &memory->registers[operand->base_reg];
         case AM_REG_DEREF:
             return (value_t*)((byte_t*)memory->registers[operand->base_reg].ptr 
-                + (memory->registers[operand->index_reg].i64 * operand->scale 
+                + (memory->registers[operand->index_reg].i64 >> operand->scale 
                 + operand->immediate.i64));
         case AM_IMM:
             return &operand->immediate;

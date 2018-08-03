@@ -96,6 +96,11 @@ Winterbird is a programming language, which is still in development.
                             data      if X & 4 != 0
                             text      if X & 8 != 0
                             heap      if X & 16 != 0
-
+    stacks   X     - sets stack pointer to X
+    stackg   X     - sets X to the stack pointer
+    getch    X     - sets X to value read from stdin
+    putch    X Y   - prints X to
+                        stdout if Y == 0
+                        stderr if Y == 1
 
 No size:

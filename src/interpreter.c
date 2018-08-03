@@ -117,6 +117,12 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
         case OP_POP:
             op1->u64 = stack_pop(memory, instruction->size).u64;
             break;
+        case OP_STACKG:
+            op1->ptr = memory->stack_ptr;
+            break;
+        case OP_STACKS:
+            memory->stack_ptr = op1->ptr;
+            break;
     // === ALU === //
         // signed
         case OP_ADD:
@@ -267,9 +273,6 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
         case OP_CMPFN:
             memory->test_flag = op1->f64 == NAN;
             break;
-        case OP_CMPFEQ:
-            memory->test_flag = op1->f64 == op2->f64;
-            break;
         case OP_CMPFG:
             memory->test_flag = op1->f64 > op2->f64;
             break;
@@ -307,6 +310,15 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
             break;
         case OP_DEBUG:
             print_stack_trace(memory, op1->u32);
+            break;
+        case OP_PUTCH:
+            FILE* output = op2->u64
+                         ? stdout
+                         : stderr;
+            putc(op1->i8, output);
+            break;
+        case OP_GETCH:
+            op1->u64 = getc(stdin);
             break;
     // === DEFAULT === //
         default:
