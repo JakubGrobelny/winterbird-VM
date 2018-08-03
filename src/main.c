@@ -3,6 +3,8 @@
 
 int main(int argc, char* argv[])
 {
+	//TODO: FIXME:
+	// change to proper argv parsing
 	assert(argc == 2);
 
 	const size_t DEFAULT_STACK_SIZE_IN_MB = 16;
@@ -26,7 +28,7 @@ int main(int argc, char* argv[])
 	run_bytecode(&memory);
 
 #ifndef NDEBUG
-	print_stack_trace(&memory, 5);
+	print_stack_trace(&memory, 21);
 #endif
 
 	free_memory(&memory);

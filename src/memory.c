@@ -5,13 +5,13 @@
 
 bool initialize_memory(memory_t* memory, uint64_t stack_megabytes)
 {
-	for (int i = 0; i < REG_NUMBER; i++)
+	for (size_t i = 0; i < REG_NUMBER; i++)
 		memory->registers[i].i64 = 0;
 
 	memory->stack_size = stack_megabytes * MEGABYTE;
 	memory->stack = malloc(memory->stack_size);
 
-	memory->stack_ptr 		= memory->stack;
+	memory->stack_ptr = memory->stack;
 
 	memory->test_flag = 0;
 	memory->instr_ptr = 0;	
@@ -20,6 +20,11 @@ bool initialize_memory(memory_t* memory, uint64_t stack_megabytes)
 	memory->halt 		 = false;
 
 	init_empty_program(&memory->program_data);
+
+#ifndef NO_TRACK_ALLOC
+	if (!init_alloc_array(&memory->allocated_ptrs))
+		return false;
+#endif
 
 	return memory->stack;
 }
@@ -53,6 +58,7 @@ void free_memory(memory_t* memory)
 	memory->stack_size = 0;
 	memory->stack_ptr = NULL;
 	free_program(&memory->program_data);
+	free_alloc_array(&memory->allocated_ptrs);
 }
 
 value_t* get_pointer_from_operand(memory_t* memory, instruction_t* instruction, uint8_t operand_id)
@@ -117,7 +123,7 @@ bool load_program(memory_t* memory, char* path)
 		file_exit(file)
 
 	instruction_t instr;
-	
+
 	while (fread(&instr, sizeof(instruction_t), 1, file))
 	{
 		if (program->text_size >= text_capacity)
@@ -132,6 +138,11 @@ bool load_program(memory_t* memory, char* path)
 		program->text[program->text_size++] = instr;
 	}
 	
+	// removing uneccessary space (it slows down file loading but it happens only once so whatever)
+	// instruction_t* new_ptr = realloc(program->text, program->text_size);
+	// if (new_ptr)
+		// program->text = new_ptr;
+
 	fclose(file);
 
 	return true;
@@ -143,12 +154,14 @@ void print_stack_trace(memory_t* memory, uint32_t what)
 	const uint32_t stack = 0x2;
 	const uint32_t data  = 0x4;
 	const uint32_t text  = 0x8;
+	const uint32_t alloc = 0x16;
 
 	if (what & reg)
 	{
 		fprintf(stderr, "REGISTERS:\n");
 		for (size_t i = 0; i < REG_NUMBER; i++)
-			fprintf(stderr, "$%ld: %lx\n", i, memory->registers[i].u64);
+			if (memory->registers[i].u64)
+				fprintf(stderr, "$%ld: %lx\n", i, memory->registers[i].u64);
 		fprintf(stderr, "\n");
 	}
 	if (what & stack)
@@ -178,8 +191,62 @@ void print_stack_trace(memory_t* memory, uint32_t what)
 		{
 			instruction_t* instr = &memory->program_data.text[i];
 
-			//FIXME:
+			//TODO: finish (maybe disassemble)
 			fprintf(stderr, "0x%lx: %x", i, instr->instr);
 		}
 	}
+	if (what & alloc)
+	{
+		fprintf(stderr, "ALLOC:\n");
+
+		for (size_t i = 0; i < memory->allocated_ptrs.size; i++)
+		{
+			alloc_ptr_t* ptr = &memory->allocated_ptrs.ptrs[i];
+			fprintf(stderr, "0x%lx: %lx\n", ptr->ptr, ptr->size);
+			//TODO: add printing of the actual contents under the allocated ptr
+		}
+	}
+}
+
+void* tracked_alloc(memory_t* memory, size_t size)
+{
+	if (memory->allocated_ptrs.capacity <= memory->allocated_ptrs.size)
+	{
+		memory->allocated_ptrs.capacity *= 2;
+		alloc_ptr_t* new_array = realloc(memory->allocated_ptrs.ptrs,
+										 memory->allocated_ptrs.capacity);
+
+		if (!new_array)
+		{
+			memory->allocated_ptrs.capacity /= 2;
+			return NULL;
+		}
+
+		memory->allocated_ptrs.ptrs = new_array;
+	}
+
+	alloc_ptr_t new_ptr;
+	new_ptr.size = size;
+	new_ptr.ptr = malloc(size);
+
+	memory->allocated_ptrs.ptrs[memory->allocated_ptrs.size++] = new_ptr;
+
+	return new_ptr.ptr;
+}
+
+void tracked_free(memory_t* memory, void* ptr)
+{
+	for (size_t i = 0; i < memory->allocated_ptrs.size; i++)
+	{
+		alloc_ptr_t* alloc_ptr = &memory->allocated_ptrs.ptrs[i];
+
+		if (alloc_ptr->ptr == ptr)
+		{
+			alloc_ptr->size = 0;
+			free(ptr);
+			return;
+		}
+	}
+
+	report_error(UNALLOCATED_FREE, NULL);
 }

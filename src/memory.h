@@ -5,6 +5,7 @@
 #include "value.h"
 #include "instruction.h"
 #include "program.h"
+#include "alloc.h"
 
 typedef struct
 {
@@ -22,6 +23,8 @@ typedef struct
 	int32_t   return_value;
 	bool 	  halt;
 
+	alloc_array_t allocated_ptrs;
+
 } memory_t;
 
 bool initialize_memory(memory_t* memory, uint64_t stack_megabytes);
@@ -31,5 +34,7 @@ value_t* get_pointer_from_operand(memory_t* memory, instruction_t* instruction, 
 void stack_push(memory_t* memory, value_t value, word_size_t size);
 value_t stack_pop(memory_t* memory, word_size_t size);
 void print_stack_trace(memory_t* memory, uint32_t what);
+void* tracked_alloc(memory_t* memory, size_t size);
+void tracked_free(memory_t* memory, void* ptr);
 
 #endif

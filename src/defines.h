@@ -1,4 +1,5 @@
 //#define NDEBUG
+//#define NO_TRACK_ALLOC
 #include "error.h"
 #include "util.h"
 

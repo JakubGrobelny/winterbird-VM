@@ -21,6 +21,12 @@ inline void throw_error()
 
 	switch (error.flag)
 	{
+		case NONE:
+			fprintf(stderr, "no error!");
+			break;
+		case UNALLOCATED_FREE:
+			fprintf(stderr, "UNALLOCATED_FREE");
+			break;
 		case STACK_OVERFLOW:
 			fprintf(stderr, "STACK_OVERFLOW");
 			break;
@@ -30,8 +36,11 @@ inline void throw_error()
 		case DIVISION_BY_ZERO:
 			fprintf(stderr, "DIVISION_BY_ZERO");
 			break;
-		case NONE:
-			fprintf(stderr, "no error!");
+		case INVALID_INSTRUCTION_SIZE:
+			fprintf(stderr, "INVALID_INSTRUCTION_SIZE");
+			break;
+		case INVALID_OPCODE:
+			fprintf(stderr, "INVALID_OPCODE");
 			break;
 		default:
 			fprintf(stderr, "ERROR(nodescr)!");

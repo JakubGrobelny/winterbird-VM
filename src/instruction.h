@@ -22,7 +22,9 @@ typedef enum
 	//branch:
 	OP_JMP, OP_JIF, OP_CALL, OP_RET,
 	// other:
-	OP_SYSCALL, OP_DEBUG, OP_HALT
+	OP_SYSCALL, OP_DEBUG, OP_HALT,
+	// new instructions:
+	OP_FWRITEB,
 	 
 	/*
 	Memory:
@@ -38,6 +40,7 @@ typedef enum
 										mode to be used when opening should be given in first register
 		fclose {REG}				- closes file pointed by operand
 		freadb {REG}, {REG}			- reads byte from file from first register and stores it in second register
+		fwriteb {REG}, {REG}		- writes byte from second operand to file from first operand
 		push {REG}
 		pop  {REG}
 
@@ -76,7 +79,6 @@ typedef enum
 
 	Branch:
 
-		//NOTE: jump address should be actual_address - 1.
 		//NOTE: addresses are absolute.
 		jmp 	{ADDRESS} 		- always jumps
 		jif 	{ADDRESS} 		- jumps if test flag is set

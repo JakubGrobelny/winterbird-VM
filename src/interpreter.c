@@ -55,10 +55,18 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 		}
 		// dynamic allocation
 		case OP_ALLOC:
+#ifdef NO_TRACK_ALLOC
 			op1->ptr = malloc(op2->u64);
+#else
+			op1->ptr = tracked_alloc(memory, op2->u64);
+#endif
 			break;
 		case OP_FREE:
+#ifdef NO_TRACK_ALLOC
 			free(op1->ptr);
+#else
+			tracked_free(memory, op1->ptr);
+#endif
 			break;
 		// files
 		case OP_FOPEN:
@@ -81,8 +89,8 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 				case 6: mode = "ab+";
 					break;
 				default:
-					mode = "rb";
-					break;
+					report_error(INVALID_FILE_MODE, op2->str);
+					return;
 			}
 
 			FILE* file = fopen(op2->str, mode);
@@ -95,6 +103,11 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 		case OP_FREADB:
 			//NOTE: sets test flag if failed to read
 			if(!fread(&op2, 1, 1, op1->ptr))
+				memory->test_flag = true;
+			break;
+		case OP_FWRITEB:
+			//NOTE: sets test flag if failed to write
+			if (!fwrite(&op2, 1, 1, op1->ptr))
 				memory->test_flag = true;
 			break;
 		// stack
@@ -264,22 +277,20 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 			memory->test_flag = op1->f64 < op2->f64;
 			break;
 	// === BRANCHING === //
-		//NOTE: PC is incremented outside this function, so address should be 
-		//      pointing to previous instruction (relatively to jump target)
 		case OP_JMP:
-			memory->instr_ptr = op1->i64;
+			memory->instr_ptr = op1->i64 - 1;
 			break;
 		case OP_JIF:
 			memory->instr_ptr = memory->test_flag 
 							  ? memory->instr_ptr
-							  : op1->u64;
+							  : op1->u64 - 1;
 			break;
 		case OP_CALL:
 		{
 			value_t pc;
 			pc.u64 = memory->instr_ptr;
 			stack_push(memory, pc, sizeof(memory->instr_ptr));
-			memory->instr_ptr = op1->i64;
+			memory->instr_ptr = op1->i64 - 1;
 			break;
 		}
 		case OP_RET:
