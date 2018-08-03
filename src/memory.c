@@ -14,10 +14,10 @@ bool initialize_memory(memory_t* memory, uint64_t stack_megabytes)
     memory->stack_ptr = memory->stack;
 
     memory->test_flag = 0;
-    memory->instr_ptr = 0;	
+    memory->instr_ptr = 0;    
 
     memory->return_value = -1;
-    memory->halt 		 = false;
+    memory->halt         = false;
 
     init_empty_program(&memory->program_data);
 
@@ -98,9 +98,9 @@ bool load_program(memory_t* memory, char* path)
         return false;
 
     /* Winterbird bytecode file (.wb):
-        8 bytes 					-- size of .data section
-        X bytes 					-- bytes of .data section, at least one byte
-        n * sizeof(instruction_t) 	-- n instructions (at least one)
+        8 bytes                     -- size of .data section
+        X bytes                     -- bytes of .data section, at least one byte
+        n * sizeof(instruction_t)   -- n instructions (at least one)
     */
 
 

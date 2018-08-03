@@ -4,8 +4,8 @@
 bool init_alloc_array(alloc_array_t* array)
 {
     array->capacity = 8;
-    array->size 	= 0;
-    array->ptrs		= malloc(array->capacity);
+    array->size     = 0;
+    array->ptrs     = malloc(array->capacity);
 
     return array->ptrs;
 }

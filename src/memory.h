@@ -12,16 +12,16 @@ typedef struct
     value_t registers[128];
 
     byte_t*   stack;
-    size_t	  stack_size;
-    byte_t*	  stack_ptr;
+    size_t    stack_size;
+    byte_t*   stack_ptr;
   
-    ptr_t	  instr_ptr;
+    ptr_t     instr_ptr;
     uint64_t  test_flag;
 
     program_t program_data;
 
     int32_t   return_value;
-    bool 	  halt;
+    bool      halt;
 
     alloc_array_t allocated_ptrs;
 

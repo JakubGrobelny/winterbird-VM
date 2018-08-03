@@ -21,7 +21,7 @@ typedef enum
 typedef struct
 {
     error_flag_t flag;
-    char*		 description;
+    char*        description;
 
 } error_t;
 

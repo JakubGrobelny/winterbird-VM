@@ -14,20 +14,20 @@ typedef enum
 
 typedef union
 {
-    void*		ptr;
-    char* 		str;
+    void*    ptr;
+    char*    str;
 
-    double   	f64;
+    double   f64;
 
-    int64_t  	i64;
-    int32_t     i32;
-    int16_t     i16;
-    int8_t      i8;
+    int64_t  i64;
+    int32_t  i32;
+    int16_t  i16;
+    int8_t   i8;
 
-    uint64_t	u64;
-    uint32_t    u32;
-    uint16_t    u16;
-    uint8_t     u8;
+    uint64_t u64;
+    uint32_t u32;
+    uint16_t u16;
+    uint8_t  u8;
 
 } value_t;
 

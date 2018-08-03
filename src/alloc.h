@@ -16,8 +16,8 @@ typedef struct
 typedef struct
 {
     alloc_ptr_t* ptrs;
-    size_t 		 capacity;
-    size_t 		 size;
+    size_t       capacity;
+    size_t       size;
 
 } alloc_array_t;
 

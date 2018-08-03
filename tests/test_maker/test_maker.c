@@ -59,11 +59,11 @@ int main(int argc, char* argv[])
         for (int e = 0; e < 2; e++)
         {
             printf("op%d: \n", e);  
-            printf("  type: ");		scanf("%d",  	&text[i].operands[e].mode);
-            printf("  imm: ");    	scanf("%ld", 	&text[i].operands[e].imm);
-            printf("  reg: ");		scanf("%hhd", 	&text[i].operands[e].reg);
-            printf("  idx: ");		scanf("%hhd", 	&text[i].operands[e].idx);
-            printf("  scale: ");	scanf("%hhd", 	&text[i].operands[e].scale);
+            printf("  type: ");    scanf("%d",   &text[i].operands[e].mode);
+            printf("  imm: ");     scanf("%ld",  &text[i].operands[e].imm);
+            printf("  reg: ");     scanf("%hhd", &text[i].operands[e].reg);
+            printf("  idx: ");     scanf("%hhd", &text[i].operands[e].idx);
+            printf("  scale: ");   scanf("%hhd", &text[i].operands[e].scale);
             printf("\n");
         }
 
