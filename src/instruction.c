@@ -1,6 +1,6 @@
 #include "instruction.h"
 
-operand_t create_empty_operand()
+operand_t create_empty_operand(void)
 {
     operand_t result;
 

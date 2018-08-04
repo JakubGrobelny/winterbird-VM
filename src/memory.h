@@ -27,6 +27,17 @@ typedef struct
 
 } memory_t;
 
+
+typedef enum
+{
+    PST_REG   = 1,
+    PST_STACK = 2,
+    PST_DATA  = 4,
+    PST_TEXT  = 8,
+    PST_ALLOC = 16
+
+} stack_trace_args_t;
+
 bool initialize_memory(memory_t* memory, uint64_t stack_megabytes);
 bool load_program(memory_t* memory, char* path);
 void free_memory(memory_t* memory);

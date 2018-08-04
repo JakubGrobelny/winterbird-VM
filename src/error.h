@@ -27,8 +27,8 @@ typedef struct
 
 error_t error;
 
-bool was_error();
-void throw_error();
+bool was_error(void);
+void throw_error(void);
 void report_error(error_flag_t flag, char* desc);
 
 #endif

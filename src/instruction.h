@@ -39,7 +39,7 @@ typedef struct
 
 } instruction_t;
 
-operand_t create_empty_operand();
+operand_t create_empty_operand(void);
 operand_t create_operand(addr_mode_t type, 
                          reg_id_t reg, 
                          reg_id_t idx_reg, 

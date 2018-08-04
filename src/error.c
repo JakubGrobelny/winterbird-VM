@@ -4,7 +4,7 @@
 
 error_t error = {NONE, NULL};
 
-inline bool was_error()
+inline bool was_error(void)
 {
     return *(error_flag_t*)(&error);
 }
@@ -15,7 +15,7 @@ inline void report_error(error_flag_t flag, char* desc)
     error.description = desc;
 }
 
-inline void throw_error()
+inline void throw_error(void)
 {
     fprintf(stderr, "Program exiting due to ");
 

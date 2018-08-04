@@ -58,7 +58,9 @@ void free_memory(memory_t* memory)
     memory->stack_size = 0;
     memory->stack_ptr = NULL;
     free_program(&memory->program_data);
+#ifndef NO_TRACK_ALLOC
     free_alloc_array(&memory->allocated_ptrs);
+#endif
 }
 
 value_t* get_pointer_from_operand(memory_t* memory, instruction_t* instruction, uint8_t operand_id)
@@ -150,11 +152,11 @@ bool load_program(memory_t* memory, char* path)
 
 void print_stack_trace(memory_t* memory, uint32_t what)
 {
-    const uint32_t reg   = 0x1;
-    const uint32_t stack = 0x2;
-    const uint32_t data  = 0x4;
-    const uint32_t text  = 0x8;
-    const uint32_t alloc = 0x16;
+    const uint32_t reg   = 1;
+    const uint32_t stack = 2;
+    const uint32_t data  = 4;
+    const uint32_t text  = 8;
+    const uint32_t alloc = 16;
 
     if (what & reg)
     {

@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     run_bytecode(&memory);
 
 #ifndef NDEBUG
-    print_stack_trace(&memory, 21);
+    print_stack_trace(&memory, PST_REG | PST_STACK | PST_ALLOC);
 #endif
 
     free_memory(&memory);

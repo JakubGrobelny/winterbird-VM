@@ -13,7 +13,7 @@ Winterbird is a programming language, which is still in development.
 
 ##Operand modes:
 - register: $reg
-- register dereference : *(\$reg + $idx * scale + offset)
+- register dereference : (\$reg + $idx * scale + offset)
 - 64-bit value: value
 - 64-bit address dereference: *value
 
