@@ -65,25 +65,38 @@ void free_memory(memory_t* memory)
 
 value_t* get_pointer_from_operand(memory_t* memory, instruction_t* instruction, uint8_t operand_id)
 {
-    operand_t* operand = &instruction->operands[operand_id];
+    value_t* operand = &instruction->operands[operand_id];
+    uint16_t mode = operand_id 
+                  ? (uint16_t)(instruction->op_modes >> 16)
+                  : (uint16_t)instruction->op_modes & 0x0000FFFF;
 
-    switch (operand->type)
+    switch (mode)
     {
         case AM_REG:
-            return &memory->registers[operand->base_reg];
-        case AM_REG_DEREF:
-            return (value_t*)((byte_t*)memory->registers[operand->base_reg].ptr 
-                + (memory->registers[operand->index_reg].i64 >> operand->scale 
-                + operand->immediate.i64));
+            return &memory->registers[operand->u16];
         case AM_IMM:
-            return &operand->immediate;
+            return operand;
+        case AM_REG_DEREF:
+        {
+            uint16_t reg   =            operand->u16;
+            uint16_t idx   = (uint16_t)(operand->u32 >> 16);
+            uint16_t scale = (uint16_t)(operand->u64 >> 32);
+            uint16_t off   = (uint16_t)(operand->u64 >> 48);
+
+            value_t reg_val = memory->registers[reg];
+            value_t idx_val = memory->registers[idx];
+            
+            uint8_t* ptr = (uint8_t*)reg_val.ptr + (idx_val.u64 << scale) + off;
+            return (value_t*)ptr;
+        }
         case AM_IMM_DEREF:
-            return (value_t*)(memory->program_data.data + operand->immediate.i64);
-        case AM_NONE:
-            return NULL;
+            return (value_t*)(memory->program_data.data + operand->u64);
         default:
             report_error(INVALID_OPERAND_TYPE, NULL);
             return NULL;
+        case AM_NONE:
+            return NULL;
+        
     }
 }
 
@@ -104,7 +117,6 @@ bool load_program(memory_t* memory, char* path)
         X bytes                     -- bytes of .data section, at least one byte
         n * sizeof(instruction_t)   -- n instructions (at least one)
     */
-
 
     if (!fread(&program->data_size, sizeof(size_t), 1, file))
         file_exit(file)
@@ -140,6 +152,7 @@ bool load_program(memory_t* memory, char* path)
         program->text[program->text_size++] = instr;
     }
     
+    //FIXME:
     // removing uneccessary space (it slows down file loading but it happens only once so whatever)
     // instruction_t* new_ptr = realloc(program->text, program->text_size);
     // if (new_ptr)
@@ -194,7 +207,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
             instruction_t* instr = &memory->program_data.text[i];
 
             //TODO: finish (maybe disassemble)
-            fprintf(stderr, "0x%lx: %x", i, instr->instr);
+            fprintf(stderr, "0x%lx: %x", i, instr->opcode);
         }
     }
     if (what & alloc)

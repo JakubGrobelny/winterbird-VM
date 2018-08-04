@@ -1,10 +1,17 @@
 TODO:
 1. assembler + linker
-3. optimize instruction size in files
-4. .data seems to be backwards and doesn't print properly (test-maker works)
-	- printing works properly, but printf cuts digits if number is 0 (even hex)
 6. fix printf offset (%*3?)+
 7. remove .data section size requirement from file loading
-8. assign values to opcode enums so that they won't change after inserting new instruction
+11. add string and char for assembler
+12. add separate stack for call/ret
+
 DONE:
 2. add OP_FWRITEB instruction (write byte)
+9. split mov into mov64 etc, standardize opcodes
+10. optimize instruction encoding
+3. optimize instruction size in files
+8. assign values to opcode enums so that they won't change after inserting new instruction
+
+I GUESS IT KINDA WORKS?:
+4. .data seems to be backwards and doesn't print properly (test-maker works)
+	- printing works properly, but printf cuts digits if number is 0 (even hex)

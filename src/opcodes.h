@@ -92,7 +92,7 @@ typedef enum
     OP_GETCH   = 0x050E,
     OP_PUTCH   = 0x060E,
 
-     // described in README.mb
+    // described in README.mb
 
 } opcode_t;
 

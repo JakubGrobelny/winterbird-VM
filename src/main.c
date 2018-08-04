@@ -11,6 +11,7 @@ int main(int argc, char* argv[])
     
     memory_t memory;
 
+
     if (!initialize_memory(&memory, DEFAULT_STACK_SIZE_IN_MB))
     {
         fprintf(stderr, "Failed to initialize memory!\n");
@@ -28,7 +29,7 @@ int main(int argc, char* argv[])
     run_bytecode(&memory);
 
 #ifndef NDEBUG
-    print_stack_trace(&memory, PST_REG | PST_STACK | PST_ALLOC);
+    print_stack_trace(&memory, PST_REG | PST_DATA | PST_ALLOC);
 #endif
 
     free_memory(&memory);

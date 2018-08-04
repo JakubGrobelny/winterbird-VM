@@ -7,21 +7,24 @@ typedef uint8_t byte_t;
 
 typedef struct
 {
-    uint64_t imm;
-    uint32_t mode;
-    uint8_t  reg;
-    uint8_t  idx;
-    uint8_t  scale;
+    // register encoding:
+    // 16 bit scale, 16 bit offset, 16 bit idx, 16 bit reg
 
-} operand_t;
-
-typedef struct
-{
-    operand_t operands[2];
-    uint32_t  opcode;
-    uint32_t  size;
+    uint64_t    operands[2];
+    uint32_t    opcode;
+    uint32_t    op_modes;
 
 } instruction_t;
+
+typedef enum
+{
+    AM_NONE,
+    AM_REG,
+    AM_REG_DEREF,
+    AM_IMM,
+    AM_IMM_DEREF
+
+} addr_mode_t;
 
 int main(int argc, char* argv[])
 {
@@ -52,20 +55,58 @@ int main(int argc, char* argv[])
     {
         printf("opcode: ");
         scanf("%d", &text[i].opcode);
-        printf("size: ");
-        scanf("%d", &text[i].size);
         printf("\n");
+
+        uint32_t type[2] = {0, 0};
 
         for (int e = 0; e < 2; e++)
         {
             printf("op%d: \n", e);  
-            printf("  type: ");    scanf("%d",   &text[i].operands[e].mode);
-            printf("  imm: ");     scanf("%ld",  &text[i].operands[e].imm);
-            printf("  reg: ");     scanf("%hhd", &text[i].operands[e].reg);
-            printf("  idx: ");     scanf("%hhd", &text[i].operands[e].idx);
-            printf("  scale: ");   scanf("%hhd", &text[i].operands[e].scale);
+            
+            printf("  opmode: ");
+            scanf("%d", &type[e]);
+
+            if (type[e] == AM_IMM || type[e] == AM_IMM_DEREF)
+            {
+                printf("  imm: ");
+                scanf("%lu", &text[i].operands[e]);
+            }
+            else if (type[e] == AM_REG)
+            {
+                printf("  reg: ");
+                scanf("%lu", &text[i].operands[e]);
+            }
+            else if (type[e] == AM_REG_DEREF)
+            {
+                printf("  reg: ");
+                uint64_t reg = 0;
+                scanf("%lu", &reg);
+
+                printf("  idx: ");
+                uint64_t idx = 0;
+                scanf("%lu", &idx);
+
+                printf("  scale: ");
+                uint64_t scale = 0;
+                scanf("%lu", &scale);
+
+                printf("  off:  ");
+                uint64_t off = 0;
+                scanf("%lu", &off);
+
+                uint64_t operand = reg 
+                                 | (idx << 16)
+                                 | (scale << 32)
+                                 | (off << 48);
+
+                text[i].operands[e] = operand;
+            }
+            else if (type[e] == AM_NONE)
+                text[i].operands[e] = (uint64_t)0;
+
             printf("\n");
         }
+        text[i].op_modes = (type[1] << 16) | type[0];
 
         system("clear");
     }

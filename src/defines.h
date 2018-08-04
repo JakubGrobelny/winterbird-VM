@@ -1,5 +1,6 @@
 //#define NDEBUG
 //#define NO_TRACK_ALLOC
+#define DEBUG_EXTRA
 #include "error.h"
 #include "util.h"
 
@@ -13,7 +14,6 @@ typedef uint64_t  size_t;
 typedef uint64_t  ptr_t;
 typedef uint64_t  size_t;
 typedef uint64_t  ptr_t;
-typedef uint8_t   reg_id_t;
 
 #define REG_NUMBER (size_t)128
 

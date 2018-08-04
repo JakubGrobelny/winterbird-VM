@@ -7,12 +7,25 @@ void run_bytecode(memory_t* memory)
 {
     while (!memory->halt)
     {
-        run_instruction(memory, &memory->program_data.text[memory->instr_ptr]);
+        instruction_t* instruction = &memory->program_data.text[memory->instr_ptr];
+        
+#ifdef DEBUG_EXTRA
+        printf("%lu %lu %x %x %x\n", instruction->operands[0].u64,
+                                     instruction->operands[1].u64,
+                                     instruction->opcode,
+                                     instruction->op_modes & 0x0000FFFF,
+                                     instruction->op_modes >> 16);
+#endif
+
+        run_instruction(memory, instruction);
 
         if (was_error())
             throw_error();
 
         memory->instr_ptr++;
+        
+        if (memory->instr_ptr == memory->program_data.text_size)
+            break;
     }
 }
 
@@ -21,7 +34,7 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
     value_t* op1 = get_pointer_from_operand(memory, instruction, 0);
     value_t* op2 = get_pointer_from_operand(memory, instruction, 1);
 
-    switch (instruction->instr)
+    switch (instruction->opcode)
     {
     // === MEMORY === //
         // basic value movement
@@ -104,28 +117,28 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
             break;
         // stack
         case OP_PUSH8:
-            stack_push(memory, *op1, 1);
+            stack_push(memory, *op1, SIZE_8);
             break;
         case OP_PUSH16:
-            stack_push(memory, *op1, 2);
+            stack_push(memory, *op1, SIZE_16);
             break;
         case OP_PUSH32:
-            stack_push(memory, *op1, 4);
+            stack_push(memory, *op1, SIZE_32);
             break;
         case OP_PUSH64:
-            stack_push(memory, *op1, 8);
+            stack_push(memory, *op1, SIZE_64);
             break;
         case OP_POP8:
-            op1->u64 = stack_pop(memory, 1).u64;
+            op1->u64 = stack_pop(memory, SIZE_8).u64;
             break;
         case OP_POP16:
-            op1->u64 = stack_pop(memory, 2).u64;
+            op1->u64 = stack_pop(memory, SIZE_16).u64;
             break;
         case OP_POP32:
-            op1->u64 = stack_pop(memory, 4).u64;
+            op1->u64 = stack_pop(memory, SIZE_32).u64;
             break;
         case OP_POP64:
-            op1->u64 = stack_pop(memory, 8).u64;
+            op1->u64 = stack_pop(memory, SIZE_64).u64;
             break;
         case OP_STACKG:
             op1->ptr = memory->stack_ptr;
@@ -322,11 +335,13 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
             print_stack_trace(memory, op1->u32);
             break;
         case OP_PUTCH:
+        {
             FILE* output = op2->u64
                          ? stdout
                          : stderr;
             putc(op1->i8, output);
             break;
+        }
         case OP_GETCH:
             op1->u64 = getc(stdin);
             break;
