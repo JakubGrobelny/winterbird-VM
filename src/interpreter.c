@@ -25,25 +25,17 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
     {
     // === MEMORY === //
         // basic value movement
-        case OP_MOV:
-            switch (instruction->size)
-            {
-                case SIZE_8:
-                    op1->u8 = op2->u8;
-                    break;
-                case SIZE_16:
-                    op1->u16 = op2->u16;
-                    break;
-                case SIZE_32:
-                    op1->u32 = op2->u32;
-                    break;
-                case SIZE_64:
-                    op1->u64 = op2->u64;
-                    break;
-                default:
-                    report_error(INVALID_INSTRUCTION_SIZE, NULL);
-                    break;
-            }
+        case OP_MOV8:
+            op1->u8 = op2->u8;
+            break;
+        case OP_MOV16:
+            op1->u16 = op2->u16;
+            break;
+        case OP_MOV32:
+            op1->u32 = op2->u32;
+            break;
+        case OP_MOV64:
+            op1->u64 = op2->u64;
             break;
         case OP_SWAP:
         {
@@ -111,11 +103,29 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
                 memory->test_flag = true;
             break;
         // stack
-        case OP_PUSH:
-            stack_push(memory, *op1, instruction->size);
+        case OP_PUSH8:
+            stack_push(memory, *op1, 1);
             break;
-        case OP_POP:
-            op1->u64 = stack_pop(memory, instruction->size).u64;
+        case OP_PUSH16:
+            stack_push(memory, *op1, 2);
+            break;
+        case OP_PUSH32:
+            stack_push(memory, *op1, 4);
+            break;
+        case OP_PUSH64:
+            stack_push(memory, *op1, 8);
+            break;
+        case OP_POP8:
+            op1->u64 = stack_pop(memory, 1).u64;
+            break;
+        case OP_POP16:
+            op1->u64 = stack_pop(memory, 2).u64;
+            break;
+        case OP_POP32:
+            op1->u64 = stack_pop(memory, 4).u64;
+            break;
+        case OP_POP64:
+            op1->u64 = stack_pop(memory, 8).u64;
             break;
         case OP_STACKG:
             op1->ptr = memory->stack_ptr;
