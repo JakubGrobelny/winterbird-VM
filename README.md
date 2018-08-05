@@ -28,6 +28,7 @@ Winterbird is a programming language, which is still in development.
     free     X     - frees dynamically allocated memory 
                         from pointer in X 
     swap     X Y   - swaps contents of X and Y
+    laddr    X Y   - moves the address of label Y to X
     fopen    X Y   - opens file with name pointed by Y and stores file 
                         pointer in X. Sets test flag if failed.
     fclose   X     - closes file pointed by X. Sets test 
@@ -60,11 +61,11 @@ Winterbird is a programming language, which is still in development.
     fneg     X Y   - sets X to -Y. (float64)
     fmul     X Y   - sets X to X * Y. (float64)
     fdiv     X Y   - sets X to X / Y. (float64)
-    fadd32     X Y   - sets X to X + Y. (float32)
-    fsub32     X Y   - sets X to X - Y. (floa32t)
-    fneg32     X Y   - sets X to -Y. (float32)
-    fmul32     X Y   - sets X to X * Y. (float32)
-    fdiv32     X Y   - sets X to X / Y. (float32)
+    fadd32     X Y - sets X to X + Y. (float32)
+    fsub32     X Y - sets X to X - Y. (floa32t)
+    fneg32     X Y - sets X to -Y. (float32)
+    fmul32     X Y - sets X to X * Y. (float32)
+    fdiv32     X Y - sets X to X / Y. (float32)
     and      X Y   - sets X to bitwise X and Y.
     or       X Y   - sets X to bitwise X or Y. 
     xor      X Y   - sets X to bitwise X xor Y.
@@ -85,11 +86,11 @@ Winterbird is a programming language, which is still in development.
     cmpfl    X Y   - sets test flag if X < Y. (float)
     cmpfi    X     - sets test flag if X is infinity.
     cmpfn    X     - sets test flag if X is NaN.
-    cmpf32z    X     - sets test flag if X is zero. (float32)
-    cmpf32g    X Y   - sets test flag if X > Y. (float32)
-    cmpf32l    X Y   - sets test flag if X < Y. (float32)
-    cmpf32i    X     - sets test flag if X is infinity. (float32)
-    cmpf32n    X     - sets test flag if X is NaN. (float32)
+    cmpf32z    X   - sets test flag if X is zero. (float32)
+    cmpf32g    X Y - sets test flag if X > Y. (float32)
+    cmpf32l    X Y - sets test flag if X < Y. (float32)
+    cmpf32i    X   - sets test flag if X is infinity. (float32)
+    cmpf32n    X   - sets test flag if X is NaN. (float32)
 
     cmpul    X Y   - sets test flag if X < Y. (unsigned)
     cmpug    X Y   - sets test flag if X > Y. (unsigned)

@@ -8,6 +8,7 @@ typedef enum
     OP_MOV16   = 0x0200,
     OP_MOV8    = 0x0300,
     OP_SWAP    = 0x0400,
+    OP_LADDR   = 0x0500,
 
     OP_PUSH64  = 0x0001,
     OP_PUSH32  = 0x0101,
@@ -52,7 +53,6 @@ typedef enum
     OP_FNEG    = 0x0208,
     OP_FMUL    = 0x0308,
     OP_FDIV    = 0x0408,
-
     OP_FADD32  = 0x0608,
     OP_FSUB32  = 0x0708,
     OP_FNEG32  = 0x0808,

@@ -50,6 +50,9 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
             op2->u64 = temp.u64;
             break;
         }
+        case OP_LADDR:
+            op1->ptr = op2;
+            break;
         // dynamic allocation
         case OP_ALLOC:
 #ifdef NO_TRACK_ALLOC

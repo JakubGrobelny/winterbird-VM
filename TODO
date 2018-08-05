@@ -5,6 +5,9 @@ TODO:
 11. add string and char for assembler
 12. add separate stack for call/ret
 13. fix stack trace printing so that is actually works
+14. add uninitialzed .data section
+15. add addressing mode for label addresses
+16. add SEGFAULT handling
 
 DONE:
 2. add OP_FWRITEB instruction (write byte)

@@ -1,6 +1,6 @@
 # Executable
 wbvm
-*/test-maker
+tests/test_maker/test-maker
 
 # Prerequisites
 *.d

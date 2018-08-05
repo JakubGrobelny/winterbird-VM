@@ -113,50 +113,51 @@ bool load_program(memory_t* memory, char* path)
         return false;
 
     /* Winterbird bytecode file (.wb):
-        8 bytes                     -- size of .data section
-        X bytes                     -- bytes of .data section, at least one byte
-        n * sizeof(instruction_t)   -- n instructions (at least one)
+        8 bytes                     -- size of unitialized .data section
+        8 bytes                     -- size of initialized .data section
+        8 bytes                     -- size of .text (number of instructions)
+        X bytes                     -- bytes of initialized .data section
+        Y bytes                     -- instructions
     */
 
+   // size of uninitialized data
+   size_t uninit_data_size;
+
+    // reading uninit_data_size
+    if (!fread(&uninit_data_size, sizeof(size_t), 1, file))
+        file_exit(file)
+    // reading initialized data size
     if (!fread(&program->data_size, sizeof(size_t), 1, file))
         file_exit(file)
+    // reading instruction count
+    if (!fread(&program->text_size, sizeof(size_t), 1, file));
+        file_exit(file);
 
-    program->data = malloc(program->data_size);
-
-    if (!program->data)
-        file_exit(file)
-
-    if (!fread(program->data, program->data_size, 1, file))
-        file_exit(file)
-
-    size_t text_capacity = 1;
-    program->text_size = 0;
-    program->text = malloc(text_capacity * sizeof(instruction_t));
-
-    if (!program->text)
-        file_exit(file)
-
-    instruction_t instr;
-
-    while (fread(&instr, sizeof(instruction_t), 1, file))
+    if (program->data_size + uninit_data_size)
     {
-        if (program->text_size >= text_capacity)
-        {
-            text_capacity *= 2;
-            program->text = realloc(program->text, text_capacity * sizeof(instruction_t));
-
-            if (!program->text)
-                file_exit(file)
-        }
-
-        program->text[program->text_size++] = instr;
+        // allocating space for both uninitialized and initialized data
+        program->data = calloc(program->data_size + uninit_data_size, sizeof(uint8_t));
+        if (!program->data)
+            file_exit(file)
+        // reading data
+        if (!fread(program->data + uninit_data_size, 1, 
+                program->data_size, file) != program->data_size)
+            file_exit(file)
+        // setting overall data size to be the sum of init and uninit data size
+        program->data_size += uninit_data_size;
     }
     
-    //FIXME:
-    // removing uneccessary space (it slows down file loading but it happens only once so whatever)
-    // instruction_t* new_ptr = realloc(program->text, program->text_size);
-    // if (new_ptr)
-        // program->text = new_ptr;
+    if (program->text_size)
+    {
+        // allocating space for instructions
+        program->text = malloc(program->text_size * sizeof(instruction_t));
+        if (!program->text)
+            file_exit(file)
+        // reading instruction data
+        if (!fread(program->text, sizeof(instruction_t), 
+                program->text_size, file) != program->text_size)
+            file_exit(file)    
+    }
 
     fclose(file);
 
@@ -165,13 +166,7 @@ bool load_program(memory_t* memory, char* path)
 
 void print_stack_trace(memory_t* memory, uint32_t what)
 {
-    const uint32_t reg   = 1;
-    const uint32_t stack = 2;
-    const uint32_t data  = 4;
-    const uint32_t text  = 8;
-    const uint32_t alloc = 16;
-
-    if (what & reg)
+    if (what & PST_REG)
     {
         fprintf(stderr, "REGISTERS:\n");
         for (size_t i = 0; i < REG_NUMBER; i++)
@@ -179,7 +174,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
                 fprintf(stderr, "$%ld: %lx\n", i, memory->registers[i].u64);
         fprintf(stderr, "\n");
     }
-    if (what & stack)
+    if (what & PST_STACK)
     {
         fprintf(stderr, "STACK:\n");
         uint32_t* address = (void*)memory->stack;
@@ -188,7 +183,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
             fprintf(stderr, "0x%lx: %x %x\n", address, *address++, *address++);
         fprintf(stderr, "\n");
     }
-    if (what & data)
+    if (what & PST_DATA)
     {
         fprintf(stderr, "DATA:\n");
         uint32_t* address = (void*)memory->program_data.data;
@@ -198,7 +193,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
             fprintf(stderr, "0x%lx: %x %x\n", address, *address++, *address++);
         fprintf(stderr, "\n");
     }
-    if (what & text)
+    if (what & PST_TEXT)
     {
         fprintf(stderr, "TEXT:\n");
 
@@ -210,7 +205,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
             fprintf(stderr, "0x%lx: %x", i, instr->opcode);
         }
     }
-    if (what & alloc)
+    if (what & PST_ALLOC)
     {
         fprintf(stderr, "ALLOC:\n");
 

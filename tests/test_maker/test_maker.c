@@ -30,6 +30,10 @@ int main(int argc, char* argv[])
 {
     assert(argc == 2);
 
+    size_t uninit_data_size;
+    printf("sizeof(.uninit_data): ");
+    scanf("%ld", &uninit_data_size);
+
     size_t data_size;
     printf("sizeof(.data): ");
     scanf("%ld", &data_size);
@@ -118,8 +122,10 @@ int main(int argc, char* argv[])
     assert(file);
     printf("%s opened\n", argv[1]);
 
+    fwrite(&uninit_data_size, 8, 1, file);
     fwrite(&data_size, 8, 1, file);
-    printf("data_size written\n");
+    fwrite(&text_size, 8, 1, file);
+    printf("size info written\n");
 
     fwrite(data, data_size, 1, file);
     printf("data written\n");
