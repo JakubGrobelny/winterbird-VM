@@ -12,6 +12,10 @@ typedef enum
     OP_MEMPREP = 0x0600,
     OP_MEMCPY  = 0x0700,
     OP_MEMSET  = 0x0800,
+    OP_MOV64IF = 0x0900,
+    OP_MOV32IF = 0x0A00,
+    OP_MOV16IF = 0x0B00,
+    OP_MOV8IF  = 0x0C00,
 
     OP_PUSH64  = 0x0001,
     OP_PUSH32  = 0x0101,

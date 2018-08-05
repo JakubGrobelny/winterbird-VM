@@ -17,8 +17,9 @@ void run_bytecode(memory_t* memory)
 
         memory->instr_ptr++;
         
-        if (memory->instr_ptr == memory->program_data.text_size)
-            break;
+        memory->halt = (memory->instr_ptr  == memory->program_data.text_size)
+                     ? true
+                     : memory->halt;
     }
 }
 
@@ -64,20 +65,41 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
         case OP_MEMSET:
             memset(memory->memprep_ptr, op1->i8, op1->u64);
             break;
+        case OP_MOV64IF:
+            op1->u64 = memory->test_flag
+                     ? op2->u64
+                     : op1->u64;
+            break;
+        case OP_MOV32IF:
+            op1->u32 = memory->test_flag
+                     ? op2->u32
+                     : op1->u32;
+            break;
+        case OP_MOV16IF:
+            op1->u16 = memory->test_flag
+                     ? op2->u16
+                     : op1->u16;
+            break;
+        case OP_MOV8IF:
+            op1->u16 = memory->test_flag
+                     ? op2->u8
+                     : op1->u8;
+            break;
+
         // dynamic allocation
         case OP_ALLOC:
-#ifdef NO_TRACK_ALLOC
-            op1->ptr = malloc(op2->u64);
-#else
-            op1->ptr = tracked_alloc(&memory->allocated_ptrs, op2->u64);
-#endif
+            #ifdef NO_TRACK_ALLOC
+                op1->ptr = malloc(op2->u64);
+            #else
+                op1->ptr = tracked_alloc(&memory->allocated_ptrs, op2->u64);
+            #endif
             break;
         case OP_FREE:
-#ifdef NO_TRACK_ALLOC
-            free(op1->ptr);
-#else
-            tracked_free(&memory->allocated_ptrs, op1->ptr);
-#endif
+            #ifdef NO_TRACK_ALLOC
+                free(op1->ptr);
+            #else
+                tracked_free(&memory->allocated_ptrs, op1->ptr);
+            #endif
             break;
         // files
         case OP_FOPEN:
@@ -350,23 +372,23 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
                               : op1->u64 - 1;
             break;
         case OP_CALL:
-#ifdef SEPARATE_CALL_STACK
-            call_stack_push(&memory->call_stack, memory->instr_ptr);
-#else
-        {
-            value_t pc;
-            pc.u64 = memory->instr_ptr;
-            stack_push(memory, pc, sizeof(memory->instr_ptr));
-        }
-#endif
+            #ifdef SEPARATE_CALL_STACK
+                call_stack_push(&memory->call_stack, memory->instr_ptr);
+            #else
+            {
+                value_t pc;
+                pc.u64 = memory->instr_ptr;
+                stack_push(memory, pc, sizeof(memory->instr_ptr));
+            }
+            #endif
             memory->instr_ptr = op1->u64 - 1;
             break;
         case OP_RET:
-#ifdef SEPARATE_CALL_STACK
-            memory->instr_ptr = call_stack_pop(&memory->call_stack);
-#else
-            memory->instr_ptr = stack_pop(memory, sizeof(memory->instr_ptr)).i64;
-#endif
+            #ifdef SEPARATE_CALL_STACK
+                memory->instr_ptr = call_stack_pop(&memory->call_stack);
+            #else
+                memory->instr_ptr = stack_pop(memory, sizeof(memory->instr_ptr)).i64;
+            #endif
             break;
     // === OTHER === //
         case OP_HALT:

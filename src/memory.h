@@ -27,12 +27,13 @@ typedef struct
     byte_t*   memprep_ptr;
     int64_t   memprep_val;
 
-#ifdef SEPARATE_CALL_STACK
-    call_stack_t  call_stack;
-#endif
-#ifndef NO_TRACK_ALLOC
-    alloc_array_t allocated_ptrs;
-#endif
+    #ifdef SEPARATE_CALL_STACK
+        call_stack_t  call_stack;
+    #endif
+    
+    #ifndef NO_TRACK_ALLOC
+        alloc_array_t allocated_ptrs;
+    #endif
 
 } memory_t;
 

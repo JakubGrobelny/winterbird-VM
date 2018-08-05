@@ -22,8 +22,10 @@ Winterbird is a programming language, which is still in development.
 
     name operands - description
 
-    mov      X Y   - copies the contents of Y to X. Has size variants mem64, 
-                        mem32, mem16, mem8.
+    mov      X Y   - copies the contents of Y to X. Has size variants mov64, 
+                        mov32, mov16, mov8.
+    movif    X Y   - copies the contents of Y to X if test flag is set. Has size
+                        variants mov64if, mov32if, mov16if, mov8if
     alloc    X Y   - dynamically allocates memory of size Y and stores 
                         the pointer in X.
     free     X     - frees dynamically allocated memory 
