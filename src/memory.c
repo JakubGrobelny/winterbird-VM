@@ -130,7 +130,7 @@ bool load_program(memory_t* memory, char* path)
     if (!fread(&program->data_size, sizeof(size_t), 1, file))
         file_exit(file)
     // reading instruction count
-    if (!fread(&program->text_size, sizeof(size_t), 1, file));
+    if (!fread(&program->text_size, sizeof(size_t), 1, file))
         file_exit(file);
 
     if (program->data_size + uninit_data_size)
@@ -140,8 +140,8 @@ bool load_program(memory_t* memory, char* path)
         if (!program->data)
             file_exit(file)
         // reading data
-        if (!fread(program->data + uninit_data_size, 1, 
-                program->data_size, file) != program->data_size)
+        if (fread(program->data + uninit_data_size, 1, program->data_size, file) 
+            != program->data_size)
             file_exit(file)
         // setting overall data size to be the sum of init and uninit data size
         program->data_size += uninit_data_size;
@@ -154,8 +154,8 @@ bool load_program(memory_t* memory, char* path)
         if (!program->text)
             file_exit(file)
         // reading instruction data
-        if (!fread(program->text, sizeof(instruction_t), 
-                program->text_size, file) != program->text_size)
+        if (fread(program->text, sizeof(instruction_t), program->text_size, file) 
+            != program->text_size)
             file_exit(file)    
     }
 
@@ -171,7 +171,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
         fprintf(stderr, "REGISTERS:\n");
         for (size_t i = 0; i < REG_NUMBER; i++)
             if (memory->registers[i].u64)
-                fprintf(stderr, "$%ld: %lx\n", i, memory->registers[i].u64);
+                fprintf(stderr, "$%3ld: %016lx\n", i, memory->registers[i].u64);
         fprintf(stderr, "\n");
     }
     if (what & PST_STACK)
@@ -180,7 +180,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
         uint32_t* address = (void*)memory->stack;
 
         while (address <= (uint32_t*)memory->stack_ptr)
-            fprintf(stderr, "0x%lx: %x %x\n", address, *address++, *address++);
+            fprintf(stderr, "0x%016lx: %08x %08x\n", address, *address++, *address++);
         fprintf(stderr, "\n");
     }
     if (what & PST_DATA)
@@ -190,7 +190,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
 
         while (address <= (uint32_t*)(memory->program_data.data 
                                     + memory->program_data.data_size))
-            fprintf(stderr, "0x%lx: %x %x\n", address, *address++, *address++);
+            fprintf(stderr, "0x%016lx: %08x %08x\n", address, *address++, *address++);
         fprintf(stderr, "\n");
     }
     if (what & PST_TEXT)
@@ -202,7 +202,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
             instruction_t* instr = &memory->program_data.text[i];
 
             //TODO: finish (maybe disassemble)
-            fprintf(stderr, "0x%lx: %x", i, instr->opcode);
+            fprintf(stderr, "0x%016lx: %08x", i, instr->opcode);
         }
     }
     if (what & PST_ALLOC)
@@ -212,10 +212,12 @@ void print_stack_trace(memory_t* memory, uint32_t what)
         for (size_t i = 0; i < memory->allocated_ptrs.size; i++)
         {
             alloc_ptr_t* ptr = &memory->allocated_ptrs.ptrs[i];
-            fprintf(stderr, "0x%lx: %lx\n", ptr->ptr, ptr->size);
+            fprintf(stderr, "0x%016lx: %016lx\n", ptr->ptr, ptr->size);
             //TODO: add printing of the actual contents under the allocated ptr
         }
     }
+
+    fprintf(stderr, "RETURN_VALUE: 0x%08x\n", memory->return_value);
 }
 
 void* tracked_alloc(memory_t* memory, size_t size)

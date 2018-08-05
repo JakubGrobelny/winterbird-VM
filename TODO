@@ -1,11 +1,8 @@
 TODO:
-1. assembler + linker
 6. fix printf offset (%*3?)+
-7. remove .data section size requirement from file loading
 11. add string and char for assembler
 12. add separate stack for call/ret
 13. fix stack trace printing so that is actually works
-14. add uninitialzed .data section
 15. add addressing mode for label addresses
 16. add SEGFAULT handling
 
@@ -15,6 +12,9 @@ DONE:
 10. optimize instruction encoding
 3. optimize instruction size in files
 8. assign values to opcode enums so that they won't change after inserting new instruction
+7. remove .data section size requirement from file loading
+14. add uninitialzed .data section
+1. assembler + linker (being done (not here))
 
 I GUESS IT KINDA WORKS?:
 4. .data seems to be backwards and doesn't print properly (test-maker works)
