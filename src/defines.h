@@ -1,11 +1,12 @@
 //#define NDEBUG
 //#define NO_TRACK_ALLOC
 #define DEBUG_EXTRA
+#define SEPARATE_CALL_STACK
+
 #include "error.h"
 #include "util.h"
 
 #include <assert.h>
-
 #include <stdint.h>
 #include <stdbool.h>
 

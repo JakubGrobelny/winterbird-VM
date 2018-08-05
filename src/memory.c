@@ -26,6 +26,11 @@ bool initialize_memory(memory_t* memory, uint64_t stack_megabytes)
         return false;
 #endif
 
+#ifdef SEPARATE_CALL_STACK
+    if (!init_call_stack(&memory->call_stack))
+        return false;
+#endif
+
     return memory->stack;
 }
 

@@ -6,6 +6,7 @@
 #include "instruction.h"
 #include "program.h"
 #include "alloc.h"
+#include "call_stack.h"
 
 typedef struct
 {
@@ -14,7 +15,7 @@ typedef struct
     byte_t*   stack;
     size_t    stack_size;
     byte_t*   stack_ptr;
-  
+
     ptr_t     instr_ptr;
     uint64_t  test_flag;
 
@@ -23,7 +24,12 @@ typedef struct
     int32_t   return_value;
     bool      halt;
 
+#ifdef SEPARATE_CALL_STACK
+    call_stack_t  call_stack;
+#endif
+#ifndef NO_TRACK_ALLOC
     alloc_array_t allocated_ptrs;
+#endif
 
 } memory_t;
 

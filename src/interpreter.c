@@ -339,15 +339,23 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
                               : op1->u64 - 1;
             break;
         case OP_CALL:
+#ifdef SEPARATE_CALL_STACK
+            call_stack_push(&memory->call_stack, memory->instr_ptr);
+#else
         {
             value_t pc;
             pc.u64 = memory->instr_ptr;
             stack_push(memory, pc, sizeof(memory->instr_ptr));
-            memory->instr_ptr = op1->i64 - 1;
-            break;
         }
+#endif
+            memory->instr_ptr = op1->u64 - 1;
+            break;
         case OP_RET:
+#ifdef SEPARATE_CALL_STACK
+            memory->instr_ptr = call_stack_pop(&memory->call_stack);
+#else
             memory->instr_ptr = stack_pop(memory, sizeof(memory->instr_ptr)).i64;
+#endif
             break;
     // === OTHER === //
         case OP_HALT:
@@ -362,13 +370,8 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
             print_stack_trace(memory, op1->u32);
             break;
         case OP_PUTCH:
-        {
-            FILE* output = op2->u64
-                         ? stdout
-                         : stderr;
-            putc(op1->i8, output);
+            putc(op1->i8, op2->u64 ? stdout : stderr);
             break;
-        }
         case OP_GETCH:
             op1->u64 = getc(stdin);
             break;
