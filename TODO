@@ -3,6 +3,8 @@ TODO:
 16. add SEGFAULT handling
 18. add command line arguments
 19. consider setting memprep values to NULL and 0 after memcpy, memset
+20. add instruction benchmark
+21. optimize alloc tracking (black-red tree dictionary)
 
 DONE:
 2. add OP_FWRITEB instruction (write byte)
