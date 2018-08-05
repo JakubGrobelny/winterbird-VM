@@ -69,14 +69,14 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
 #ifdef NO_TRACK_ALLOC
             op1->ptr = malloc(op2->u64);
 #else
-            op1->ptr = tracked_alloc(memory, op2->u64);
+            op1->ptr = tracked_alloc(&memory->allocated_ptrs, op2->u64);
 #endif
             break;
         case OP_FREE:
 #ifdef NO_TRACK_ALLOC
             free(op1->ptr);
 #else
-            tracked_free(memory, op1->ptr);
+            tracked_free(&memory->allocated_ptrs, op1->ptr);
 #endif
             break;
         // files

@@ -23,5 +23,7 @@ typedef struct
 
 bool init_alloc_array(alloc_array_t* array);
 void free_alloc_array(alloc_array_t* array);
+void* tracked_alloc(alloc_array_t* array, size_t size);
+void tracked_free(alloc_array_t* array, void* ptr);
 
 #endif

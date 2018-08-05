@@ -110,7 +110,6 @@ value_t* get_pointer_from_operand(memory_t* memory, instruction_t* instruction, 
 
 bool load_program(memory_t* memory, char* path)
 {
-
     program_t* program = &memory->program_data;
 
     FILE* file;
@@ -226,47 +225,4 @@ void print_stack_trace(memory_t* memory, uint32_t what)
     }
 
     fprintf(stderr, "RETURN_VALUE: 0x%08x\n", memory->return_value);
-}
-
-void* tracked_alloc(memory_t* memory, size_t size)
-{
-    if (memory->allocated_ptrs.capacity <= memory->allocated_ptrs.size)
-    {
-        memory->allocated_ptrs.capacity *= 2;
-        alloc_ptr_t* new_array = realloc(memory->allocated_ptrs.ptrs,
-                                         memory->allocated_ptrs.capacity);
-
-        if (!new_array)
-        {
-            memory->allocated_ptrs.capacity /= 2;
-            return NULL;
-        }
-
-        memory->allocated_ptrs.ptrs = new_array;
-    }
-
-    alloc_ptr_t new_ptr;
-    new_ptr.size = size;
-    new_ptr.ptr = malloc(size);
-
-    memory->allocated_ptrs.ptrs[memory->allocated_ptrs.size++] = new_ptr;
-
-    return new_ptr.ptr;
-}
-
-void tracked_free(memory_t* memory, void* ptr)
-{
-    for (size_t i = 0; i < memory->allocated_ptrs.size; i++)
-    {
-        alloc_ptr_t* alloc_ptr = &memory->allocated_ptrs.ptrs[i];
-
-        if (alloc_ptr->ptr == ptr)
-        {
-            alloc_ptr->size = 0;
-            free(ptr);
-            return;
-        }
-    }
-
-    report_error(UNALLOCATED_FREE, NULL);
 }
