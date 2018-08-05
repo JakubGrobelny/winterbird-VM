@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
     run_bytecode(&memory);
 
 #ifndef NDEBUG
-    print_stack_trace(&memory, PST_REG | PST_DATA | PST_ALLOC);
+    print_stack_trace(&memory, PST_REG | PST_DATA | PST_ALLOC | PST_STACK);
 #endif
 
     free_memory(&memory);

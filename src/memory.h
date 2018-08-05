@@ -40,8 +40,6 @@ typedef struct
 
 } memory_t;
 
-const int sz = sizeof(memory_t);
-
 typedef enum
 {
     PST_REG   = 1,
