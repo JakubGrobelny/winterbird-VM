@@ -37,6 +37,8 @@ typedef enum
 
     OP_FTOI    = 0x0005,
     OP_ITOF    = 0x0105,
+    OP_F32TOI  = 0x0205,
+    OP_ITOF32  = 0x0305,
 
     OP_ADD     = 0x0006,
     OP_SUB     = 0x0106,

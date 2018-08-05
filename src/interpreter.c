@@ -272,6 +272,12 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
         case OP_ITOF:
             op1->f64 = (double)op2->i64;
             break;
+        case OP_F32TOI:
+            op1->i64 = (int64_t)op2->f32;
+            break;
+        case OP_ITOF32:
+            op1->f32 = (float)op2->i64;
+            break;
         // logical
         case OP_AND:
             op1->u64 &= op2->u64;

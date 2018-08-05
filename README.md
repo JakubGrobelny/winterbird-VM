@@ -49,6 +49,8 @@ Winterbird is a programming language, which is still in development.
                         pop32, pop16, pop8
     ftoi     X Y   - casts float from Y to integer and stores it in X.
     itof     X Y   - casts integer from Y to float and stores it in X.
+    f32toi   X Y   - casts 32 bit float to 64 bit integer
+    itof32   X Y   - casts 64 bit integer to 32 bit float
     add      X Y   - sets X to X + Y.
     sub      X Y   - sets X to X - Y.
     neg      X Y   - sets X to -Y.
