@@ -35,8 +35,12 @@ typedef struct
         alloc_array_t allocated_ptrs;
     #endif
 
+    size_t argc;
+    char** argv;
+
 } memory_t;
 
+const int sz = sizeof(memory_t);
 
 typedef enum
 {
@@ -48,7 +52,7 @@ typedef enum
 
 } stack_trace_args_t;
 
-bool initialize_memory(memory_t* memory, uint64_t stack_megabytes);
+bool initialize_memory(memory_t* memory, uint64_t stack_megabytes, size_t argc, char** argv);
 bool load_program(memory_t* memory, char* path);
 void free_memory(memory_t* memory);
 value_t* get_pointer_from_operand(memory_t* memory, instruction_t* instruction, uint8_t operand_id);

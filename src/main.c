@@ -7,12 +7,13 @@ int main(int argc, char* argv[])
     // change to proper argv parsing
     assert(argc == 2);
 
-    const size_t DEFAULT_STACK_SIZE_IN_MB = 16;
+    const size_t DEFAULT_STACK_SIZE_IN_MB = 8;
     
     memory_t memory;
 
+    //TODO: get argc and argv from parsing
 
-    if (!initialize_memory(&memory, DEFAULT_STACK_SIZE_IN_MB))
+    if (!initialize_memory(&memory, DEFAULT_STACK_SIZE_IN_MB, argc - 2, argv))
     {
         fprintf(stderr, "Failed to initialize memory!\n");
         free_memory(&memory);

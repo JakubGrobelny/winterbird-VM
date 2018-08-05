@@ -3,7 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 
-bool initialize_memory(memory_t* memory, uint64_t stack_megabytes)
+bool initialize_memory(memory_t* memory, uint64_t stack_megabytes,
+                       size_t argc, char** argv)
 {
     for (size_t i = 0; i < REG_NUMBER; i++)
         memory->registers[i].i64 = 0;
@@ -24,15 +25,20 @@ bool initialize_memory(memory_t* memory, uint64_t stack_megabytes)
 
     init_empty_program(&memory->program_data);
 
-#ifndef NO_TRACK_ALLOC
-    if (!init_alloc_array(&memory->allocated_ptrs))
-        return false;
-#endif
+    #ifndef NO_TRACK_ALLOC
+        if (!init_alloc_array(&memory->allocated_ptrs))
+            return false;
+    #endif
 
-#ifdef SEPARATE_CALL_STACK
-    if (!init_call_stack(&memory->call_stack))
-        return false;
-#endif
+    #ifdef SEPARATE_CALL_STACK
+        if (!init_call_stack(&memory->call_stack))
+            return false;
+    #endif
+
+    memory->argc = argc;
+    memory->argv = argc
+                 ? argv
+                 : NULL;
 
     return memory->stack;
 }
@@ -66,9 +72,9 @@ void free_memory(memory_t* memory)
     memory->stack_size = 0;
     memory->stack_ptr = NULL;
     free_program(&memory->program_data);
-#ifndef NO_TRACK_ALLOC
-    free_alloc_array(&memory->allocated_ptrs);
-#endif
+    #ifndef NO_TRACK_ALLOC
+        free_alloc_array(&memory->allocated_ptrs);
+    #endif
 }
 
 value_t* get_pointer_from_operand(memory_t* memory, instruction_t* instruction, uint8_t operand_id)

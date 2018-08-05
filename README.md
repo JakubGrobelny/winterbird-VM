@@ -8,7 +8,7 @@ Winterbird is a programming language, which is still in development.
 
 ##Technical data:
 - 128 64-bit registers
-- flexible stack size (16 MB by default)
+- flexible stack size (8 MB by default)
 - float/integer/unsigned/pointer data types
 
 ##Operand modes:
@@ -122,5 +122,7 @@ Winterbird is a programming language, which is still in development.
     putch    X Y   - prints X to
                         stdout if Y == 0
                         stderr if Y == 1
+    argcg    X     - sets X to the value indicating number of command line arguments
+    argvg    X Y   - sets X to Y-th command line argument pointer
 
 No size:

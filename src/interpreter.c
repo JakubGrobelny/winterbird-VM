@@ -408,6 +408,12 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
         case OP_GETCH:
             op1->u64 = getc(stdin);
             break;
+        case OP_ARGCG:
+            op1->u64 = memory->argc;
+            break;
+        case OP_ARGVG:
+            op1->ptr = memory->argv[op2->u64];
+            break;
     // === DEFAULT === //
         default:
             report_error(INVALID_OPCODE, NULL);

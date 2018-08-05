@@ -1,10 +1,13 @@
 TODO:
 15. add addressing mode for label addresses
 16. add SEGFAULT handling
-18. add command line arguments
 19. consider setting memprep values to NULL and 0 after memcpy, memset
 20. add instruction benchmark
 21. optimize alloc tracking (black-red tree dictionary)
+22. make stack resize? (--no_overflow flag?)
+23. load flags from executable???
+24. check speed of loading into memory vs executing a file directly (or rather
+    check whether big programs == big problems)
 
 DONE:
 2. add OP_FWRITEB instruction (write byte)
@@ -20,6 +23,7 @@ DONE:
 12. add separate stack for call/ret
 11. add string and char for assembler (not here)
 17. add memcpy/memset instruction
+18. add command line arguments
 
 I GUESS IT KINDA WORKS?:
 4. .data seems to be backwards and doesn't print properly (test-maker works)

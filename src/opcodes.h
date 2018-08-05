@@ -65,7 +65,6 @@ typedef enum
     OP_F32NEG  = 0x0808,
     OP_F32MUL  = 0x0908,
     OP_F32DIV  = 0x0A08,
-    
 
     OP_AND     = 0x0009,
     OP_OR      = 0x0109,
@@ -110,6 +109,8 @@ typedef enum
     OP_STACKS  = 0x040E,
     OP_GETCH   = 0x050E,
     OP_PUTCH   = 0x060E,
+    OP_ARGCG   = 0x070E,
+    OP_ARGVG   = 0x070F,
 
     // described in README.mb
 
