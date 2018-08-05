@@ -214,6 +214,21 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
         case OP_FDIV:
             op1->f64 /= op2->f64;
             break;
+        case OP_FADD32:
+            op1->f32 += op2->f32;
+            break;
+        case OP_FSUB32:
+            op1->f32 -= op2->f32;
+            break;
+        case OP_FNEG32:
+            op1->f32 = -op2->f32;
+            break;
+        case OP_FMUL32:
+            op1->f32 *= op2->f32;
+            break;
+        case OP_FDIV32:
+            op1->f32 /= op2->f32;
+            break;
         // casts
         case OP_FTOI:
             op1->i64 = (int64_t)op2->f64;
@@ -280,13 +295,13 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
             break;
         // float comparisons
         case OP_CMPFZ:
-            memory->test_flag = op1->f64 == 0.0f;
+            memory->test_flag = op1->f64 == 0.0;
             break;
         case OP_CMPFI:
             memory->test_flag = op1->f64 == INFINITY;
             break;
         case OP_CMPFN:
-            memory->test_flag = op1->f64 == NAN;
+            memory->test_flag = op2->f64 == NAN;
             break;
         case OP_CMPFG:
             memory->test_flag = op1->f64 > op2->f64;
@@ -294,6 +309,23 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
         case OP_CMPFL:
             memory->test_flag = op1->f64 < op2->f64;
             break;
+        // float comparisons
+        case OP_CMPF32Z:
+            memory->test_flag = op1->f32 == 0.0f;
+            break;
+        case OP_CMPF32I:
+            memory->test_flag = op1->f32 == INFINITY;
+            break;
+        case OP_CMPF32N:
+            memory->test_flag = op1->f32 == NAN;
+            break;
+        case OP_CMPF32G:
+            memory->test_flag = op1->f32 > op2->f32;
+            break;
+        case OP_CMPF32L:
+            memory->test_flag = op1->f32 < op2->f32;
+            break;
+
     // === BRANCHING === //
         case OP_JMP:
             memory->instr_ptr = op1->i64 - 1;

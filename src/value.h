@@ -18,6 +18,7 @@ typedef union
     char*    str;
 
     double   f64;
+    float    f32;
 
     int64_t  i64;
     int32_t  i32;

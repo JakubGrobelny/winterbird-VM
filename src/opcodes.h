@@ -53,6 +53,13 @@ typedef enum
     OP_FMUL    = 0x0308,
     OP_FDIV    = 0x0408,
 
+    OP_FADD32  = 0x0608,
+    OP_FSUB32  = 0x0708,
+    OP_FNEG32  = 0x0808,
+    OP_FMUL32  = 0x0908,
+    OP_FDIV32  = 0x0A08,
+    
+
     OP_AND     = 0x0009,
     OP_OR      = 0x0109,
     OP_XOR     = 0x0209,
@@ -78,6 +85,11 @@ typedef enum
     OP_CMPFN   = 0x080C,
     OP_CMPUL   = 0x090C,
     OP_CMPUG   = 0x0A0C,
+    OP_CMPF32Z = 0x0B0C,
+    OP_CMPF32G = 0x0C0C,
+    OP_CMPF32L = 0x0D0C,
+    OP_CMPF32I = 0x0E0C,
+    OP_CMPF32N = 0x0F0C,
 
     OP_JMP     = 0x000D,
     OP_JIF     = 0x010D,
