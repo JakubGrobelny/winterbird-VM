@@ -4,6 +4,7 @@ TODO:
 7. remove .data section size requirement from file loading
 11. add string and char for assembler
 12. add separate stack for call/ret
+13. fix stack trace printing so that is actually works
 
 DONE:
 2. add OP_FWRITEB instruction (write byte)

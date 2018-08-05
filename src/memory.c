@@ -184,7 +184,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
         fprintf(stderr, "STACK:\n");
         uint32_t* address = (void*)memory->stack;
 
-        while (address != (uint32_t*)memory->stack_ptr)
+        while (address <= (uint32_t*)memory->stack_ptr)
             fprintf(stderr, "0x%lx: %x %x\n", address, *address++, *address++);
         fprintf(stderr, "\n");
     }
@@ -193,7 +193,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
         fprintf(stderr, "DATA:\n");
         uint32_t* address = (void*)memory->program_data.data;
 
-        while (address != (uint32_t*)(memory->program_data.data 
+        while (address <= (uint32_t*)(memory->program_data.data 
                                     + memory->program_data.data_size))
             fprintf(stderr, "0x%lx: %x %x\n", address, *address++, *address++);
         fprintf(stderr, "\n");

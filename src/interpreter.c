@@ -8,14 +8,6 @@ void run_bytecode(memory_t* memory)
     while (!memory->halt)
     {
         instruction_t* instruction = &memory->program_data.text[memory->instr_ptr];
-        
-#ifdef DEBUG_EXTRA
-        printf("%lu %lu %x %x %x\n", instruction->operands[0].u64,
-                                     instruction->operands[1].u64,
-                                     instruction->opcode,
-                                     instruction->op_modes & 0x0000FFFF,
-                                     instruction->op_modes >> 16);
-#endif
 
         run_instruction(memory, instruction);
 
