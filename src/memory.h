@@ -24,6 +24,9 @@ typedef struct
     int32_t   return_value;
     bool      halt;
 
+    byte_t*   memprep_ptr;
+    int64_t   memprep_val;
+
 #ifdef SEPARATE_CALL_STACK
     call_stack_t  call_stack;
 #endif

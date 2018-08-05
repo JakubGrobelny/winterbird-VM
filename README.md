@@ -22,7 +22,8 @@ Winterbird is a programming language, which is still in development.
 
     name operands - description
 
-    mov      X Y   - copies the contents of Y to X. Has size variants.
+    mov      X Y   - copies the contents of Y to X. Has size variants mem64, 
+                        mem32, mem16, mem8.
     alloc    X Y   - dynamically allocates memory of size Y and stores 
                         the pointer in X.
     free     X     - frees dynamically allocated memory 
@@ -37,8 +38,13 @@ Winterbird is a programming language, which is still in development.
                         it in X. Sets test flag if failed.
     fwriteb  X Y   - writes byte from file Y into X. Sets 
                         test flag if failed.
-    push     X     - pushes data from X to the stack. Has size variants.
-    pop      X     - pops data from the stack to X. Has size variants.
+    memprep  X Y   - prepares pointer in X for memset/memcpy of Y bytes.
+    memcpy   X     - copies Z bytes from X to A, where Z and A come from memprep A Z.
+    memset   X     - sets Z bytes from A to X, where A and Z come from memprep A Z.
+    push     X     - pushes data from X to the stack. Has size variants push64,
+                        push32, push16, push8.
+    pop      X     - pops data from the stack to X. Has size variants pop64,
+                        pop32, pop16, pop8
     ftoi     X Y   - casts float from Y to integer and stores it in X.
     itof     X Y   - casts integer from Y to float and stores it in X.
     add      X Y   - sets X to X + Y.
@@ -61,11 +67,11 @@ Winterbird is a programming language, which is still in development.
     fneg     X Y   - sets X to -Y. (float64)
     fmul     X Y   - sets X to X * Y. (float64)
     fdiv     X Y   - sets X to X / Y. (float64)
-    fadd32     X Y - sets X to X + Y. (float32)
-    fsub32     X Y - sets X to X - Y. (floa32t)
-    fneg32     X Y - sets X to -Y. (float32)
-    fmul32     X Y - sets X to X * Y. (float32)
-    fdiv32     X Y - sets X to X / Y. (float32)
+    f32add   X Y   - sets X to X + Y. (float32)
+    f32sub   X Y   - sets X to X - Y. (floa32t)
+    f32neg   X Y   - sets X to -Y. (float32)
+    f32mul   X Y   - sets X to X * Y. (float32)
+    f32div   X Y   - sets X to X / Y. (float32)
     and      X Y   - sets X to bitwise X and Y.
     or       X Y   - sets X to bitwise X or Y. 
     xor      X Y   - sets X to bitwise X xor Y.

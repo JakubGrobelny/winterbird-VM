@@ -19,6 +19,9 @@ bool initialize_memory(memory_t* memory, uint64_t stack_megabytes)
     memory->return_value = -1;
     memory->halt         = false;
 
+    memory->memprep_ptr = NULL;
+    memory->memprep_val = 0;
+
     init_empty_program(&memory->program_data);
 
 #ifndef NO_TRACK_ALLOC

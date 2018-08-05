@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 void run_bytecode(memory_t* memory)
 {
@@ -52,6 +53,16 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
         }
         case OP_LADDR:
             op1->ptr = op2;
+            break;
+        case OP_MEMPREP:
+            memory->memprep_ptr = op1->ptr;
+            memory->memprep_val = op1->i64;
+            break;
+        case OP_MEMCPY:
+            memcpy(memory->memprep_ptr, op1->ptr, op2->u64);
+            break;
+        case OP_MEMSET:
+            memset(memory->memprep_ptr, op1->i8, op1->u64);
             break;
         // dynamic allocation
         case OP_ALLOC:
@@ -217,19 +228,19 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
         case OP_FDIV:
             op1->f64 /= op2->f64;
             break;
-        case OP_FADD32:
+        case OP_F32ADD:
             op1->f32 += op2->f32;
             break;
-        case OP_FSUB32:
+        case OP_F32SUB:
             op1->f32 -= op2->f32;
             break;
-        case OP_FNEG32:
+        case OP_F32NEG:
             op1->f32 = -op2->f32;
             break;
-        case OP_FMUL32:
+        case OP_F32MUL:
             op1->f32 *= op2->f32;
             break;
-        case OP_FDIV32:
+        case OP_F32DIV:
             op1->f32 /= op2->f32;
             break;
         // casts
