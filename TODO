@@ -8,6 +8,8 @@ TODO:
 23. load flags from executable???
 24. check speed of loading into memory vs executing a file directly (or rather
     check whether big programs == big problems)
+25. Opened files registry
+26. fix stack (faster version had a bug)
 
 DONE:
 2. add OP_FWRITEB instruction (write byte)

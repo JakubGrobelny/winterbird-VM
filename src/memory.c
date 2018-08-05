@@ -10,7 +10,7 @@ bool initialize_memory(memory_t* memory, uint64_t stack_megabytes,
         memory->registers[i].i64 = 0;
 
     memory->stack_size = stack_megabytes * MEGABYTE;
-    memory->stack = malloc(memory->stack_size);
+    memory->stack = calloc(memory->stack_size, sizeof(byte_t));
 
     memory->stack_ptr = memory->stack;
 
@@ -48,7 +48,27 @@ void stack_push(memory_t* memory, value_t value, word_size_t size)
     if (memory->stack_ptr + size > memory->stack_ptr + memory->stack_size)
         report_error(STACK_OVERFLOW, NULL);
 
-    memcpy(memory->stack_ptr, &value + (8 - size), size);
+    value_t* ptr = (void*)memory->stack_ptr;
+
+    switch (size)
+    {
+        case SIZE_8:
+            ptr->u8 = value.u8;
+            break;
+        case SIZE_16:
+            ptr->u16 = value.u16;
+            break;
+        case SIZE_32:
+            ptr->u32 = value.u32;
+            break;
+        case SIZE_64:
+            ptr->u64 = value.u64;
+            break;
+        default:
+            report_error(INVALID_INSTRUCTION_SIZE, NULL);
+            break;
+    }
+
     memory->stack_ptr += size;
 }
 
@@ -57,11 +77,28 @@ value_t stack_pop(memory_t* memory, word_size_t size)
     if (memory->stack_ptr < memory->stack + size)
         report_error(STACK_UNDERFLOW, NULL);
 
-    value_t result;
-    result.i64 = 0x0;
-
     memory->stack_ptr -= size;
-    memcpy(&result, memory->stack_ptr, size);
+    value_t* ptr = (void*)memory->stack_ptr;
+    value_t result = {0};
+
+    switch (size)
+    {
+        case SIZE_8:
+            result.u8 = ptr->u8;
+            break;
+        case SIZE_16:
+            result.u16 = ptr->u16;
+            break;
+        case SIZE_32:
+            result.u32 = ptr->u32;
+            break;
+        case SIZE_64:
+            result.u64 = ptr->u64;
+            break;
+        default:
+            report_error(INVALID_INSTRUCTION_SIZE, NULL);
+            break;
+    }
 
     return result;
 }
@@ -72,8 +109,13 @@ void free_memory(memory_t* memory)
     memory->stack_size = 0;
     memory->stack_ptr = NULL;
     free_program(&memory->program_data);
+    
     #ifndef NO_TRACK_ALLOC
         free_alloc_array(&memory->allocated_ptrs);
+    #endif
+    
+    #ifdef SEPARATE_CALL_STACK
+        free_call_stack(&memory->call_stack);
     #endif
 }
 
@@ -131,6 +173,7 @@ bool load_program(memory_t* memory, char* path)
         8 bytes                     -- size of .text (number of instructions)
         X bytes                     -- bytes of initialized .data section
         Y bytes                     -- instructions
+        ? bytes                     -- optional flags
     */
 
    // size of uninitialized data
@@ -146,9 +189,17 @@ bool load_program(memory_t* memory, char* path)
     if (!fread(&program->text_size, sizeof(size_t), 1, file))
         file_exit(file);
 
+    // allocating space for both uninitialized and initialized data
     if (program->data_size + uninit_data_size)
     {
-        // allocating space for both uninitialized and initialized data
+        // we want data size to be mutliple of 8 bytes
+        if ((program->data_size + uninit_data_size) % sizeof(uint64_t))
+        {
+            size_t diff = (program->data_size + uninit_data_size) % sizeof(uint64_t);
+            diff = 8 - diff;
+            uninit_data_size += diff;
+        }
+
         program->data = calloc(program->data_size + uninit_data_size, sizeof(uint8_t));
         if (!program->data)
             file_exit(file)
@@ -179,40 +230,54 @@ bool load_program(memory_t* memory, char* path)
 
 void print_stack_trace(memory_t* memory, uint32_t what)
 {
-    fprintf(stderr, "========================\n");
+    fprintf(stderr, "=====================================\n");
     if (what & PST_REG)
     {
         fprintf(stderr, "REGISTERS:\n");
         for (size_t i = 0; i < REG_NUMBER; i++)
             if (memory->registers[i].u64)
                 fprintf(stderr, "$%3ld: 0x%016lx\n", i, memory->registers[i].u64);
-        fprintf(stderr, "========================\n");
+        fprintf(stderr, "=====================================\n");
     }
     if (what & PST_STACK)
     {
         fprintf(stderr, "STACK_ADDR: 0x%016lx\n", (void*)memory->stack);
         fprintf(stderr, "STACK_PTR:  0x%016lx\n", memory->stack_ptr);
-
-        size_t stack_size = memory->stack_ptr - memory->stack; // size in bytes
-
-        if ((stack_size < memory->stack_size) && (stack_size % 8))
-            stack_size = stack_size / 8 + 1;
-        else
-            stack_size /= 8;
-
         fprintf(stderr, "STACK:\n");
-        for (size_t i = 0; i < stack_size; i++)
-            fprintf(stderr, "0x%016lx: 0x%016lx\n", memory->stack + i, memory->stack[i]);
 
-        fprintf(stderr, "========================\n");
+        uint64_t* stack_ptr = (void*)memory->stack;
+        size_t stack_size_in_words = memory->stack_ptr - memory->stack;
+        stack_size_in_words = stack_size_in_words % (sizeof(uint64_t))
+                            ? stack_size_in_words / 8 + 1
+                            : stack_size_in_words / 8;
+
+        for (size_t i = 0; i < stack_size_in_words; i++)
+        {
+            fprintf(stderr, "0x%016lx: ", stack_ptr + i);
+            fprintf_bytes64(stderr, stack_ptr[i]);
+            fprintf(stderr, "\n");
+        }
+
+        fprintf(stderr, "=====================================\n");
     }
     if (what & PST_DATA)
     {
         fprintf(stderr, "DATA:\n");
-        for (size_t i = 0; i < memory->program_data.data_size; i++)
-            fprintf(stderr, "0x%016lx: 0x%016lx\n", memory->program_data.data + i, 
-                                                  memory->program_data.data[i]);
-        fprintf(stderr, "========================\n");
+
+        uint64_t* data_ptr = (void*)memory->program_data.data;
+        size_t data_size_in_words = memory->program_data.data_size;
+        data_size_in_words = data_size_in_words % (sizeof(uint64_t))
+                           ? data_size_in_words / 8 + 1
+                           : data_size_in_words / 8;
+
+        for (size_t i = 0; i < data_size_in_words; i++)
+        {
+            fprintf(stderr, "0x%016lx: ", data_ptr + i);
+            fprintf_bytes64(stderr, data_ptr[i]);
+            fprintf(stderr, "\n");
+        }
+
+        fprintf(stderr, "=====================================\n");
     }
     if (what & PST_TEXT)
     {
@@ -225,7 +290,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
             //TODO: finish (maybe disassemble)
             fprintf(stderr, "0x%016lx: 0x%08x", i, instr->opcode);
         }
-        fprintf(stderr, "========================\n");
+        fprintf(stderr, "=====================================\n");
     }
     if (what & PST_ALLOC)
     {
@@ -237,9 +302,9 @@ void print_stack_trace(memory_t* memory, uint32_t what)
             fprintf(stderr, "0x%016lx: 0x%016lx\n", ptr->ptr, ptr->size);
             //TODO: add printing of the actual contents under the allocated ptr
         }
-        fprintf(stderr, "========================\n");
+        fprintf(stderr, "=====================================\n");
     }
 
     fprintf(stderr, "RETURN_VALUE: 0x%08x\n", memory->return_value);
-    fprintf(stderr, "========================\n");
+    fprintf(stderr, "=====================================\n");
 }

@@ -10,6 +10,15 @@ void run_bytecode(memory_t* memory)
     {
         instruction_t* instruction = &memory->program_data.text[memory->instr_ptr];
 
+        #ifdef DEBUG_EXTRA
+            printf("operand1 - operand2 - opcode - operand modes\n");
+            printf("0x%016lx - 0x%016lx - 0x%08x - 0x%08x\n",
+                    instruction->operands[0],
+                    instruction->operands[1],
+                    instruction->opcode,
+                    instruction->op_modes);
+        #endif
+
         run_instruction(memory, instruction);
 
         if (was_error())
@@ -17,7 +26,7 @@ void run_bytecode(memory_t* memory)
 
         memory->instr_ptr++;
         
-        memory->halt = (memory->instr_ptr  == memory->program_data.text_size)
+        memory->halt = (memory->instr_ptr == memory->program_data.text_size)
                      ? true
                      : memory->halt;
     }

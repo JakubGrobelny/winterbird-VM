@@ -1,6 +1,6 @@
 //#define NDEBUG
 //#define NO_TRACK_ALLOC
-#define DEBUG_EXTRA
+//#define DEBUG_EXTRA
 #define SEPARATE_CALL_STACK
 
 #include "error.h"
@@ -18,7 +18,9 @@ typedef uint64_t  ptr_t;
 
 #define REG_NUMBER (size_t)128
 
-#define NULL (void*)0
+#ifndef NULL
+    #define NULL (void*)0
+#endif
 
 #define MEGABYTE (uint64_t)1048576
 
