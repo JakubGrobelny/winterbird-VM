@@ -241,8 +241,8 @@ void print_stack_trace(memory_t* memory, uint32_t what)
     }
     if (what & PST_STACK)
     {
-        fprintf(stderr, "STACK_ADDR: 0x%016lx\n", (void*)memory->stack);
-        fprintf(stderr, "STACK_PTR:  0x%016lx\n", memory->stack_ptr);
+        fprintf(stderr, "STACK_ADDR: 0x%16p\n", (void*)memory->stack);
+        fprintf(stderr, "STACK_PTR:  0x%16p\n", (void*)memory->stack_ptr);
         fprintf(stderr, "STACK:\n");
 
         uint64_t* stack_ptr = (void*)memory->stack;
@@ -253,7 +253,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
 
         for (size_t i = 0; i < stack_size_in_words; i++)
         {
-            fprintf(stderr, "0x%016lx: ", stack_ptr + i);
+            fprintf(stderr, "0x%16p: ", (void*)(stack_ptr + i));
             fprintf_bytes64(stderr, stack_ptr[i]);
             fprintf(stderr, "\n");
         }
@@ -272,7 +272,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
 
         for (size_t i = 0; i < data_size_in_words; i++)
         {
-            fprintf(stderr, "0x%016lx: ", data_ptr + i);
+            fprintf(stderr, "0x%16p: ", (void*)(data_ptr + i));
             fprintf_bytes64(stderr, data_ptr[i]);
             fprintf(stderr, "\n");
         }
@@ -299,7 +299,7 @@ void print_stack_trace(memory_t* memory, uint32_t what)
         for (size_t i = 0; i < memory->allocated_ptrs.size; i++)
         {
             alloc_ptr_t* ptr = &memory->allocated_ptrs.ptrs[i];
-            fprintf(stderr, "0x%016lx: 0x%016lx\n", ptr->ptr, ptr->size);
+            fprintf(stderr, "0x%16p: 0x%016lx\n", ptr->ptr, ptr->size);
             //TODO: add printing of the actual contents under the allocated ptr
         }
         fprintf(stderr, "=====================================\n");

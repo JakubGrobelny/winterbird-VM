@@ -10,9 +10,9 @@ typedef struct
     // register encoding:
     // 16 bit scale, 16 bit offset, 16 bit idx, 16 bit reg
 
-    uint64_t    operands[2];
     uint32_t    opcode;
     uint32_t    op_modes;
+    uint64_t    operands[2];
 
 } instruction_t;
 

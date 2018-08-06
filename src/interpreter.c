@@ -62,7 +62,15 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
             break;
         }
         case OP_LADDR:
-            op1->ptr = op2;
+            switch (*(uint16_t*)&instruction->op_modes)
+            {
+                case AM_IMM_DEREF:
+                    op1->ptr = op2;
+                    break;
+                default:
+                    report_error(INVALID_OPERAND_TYPE, NULL);
+                    break;
+            }
             break;
         case OP_MEMPREP:
             memory->memprep_ptr = op1->ptr;

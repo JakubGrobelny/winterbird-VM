@@ -96,11 +96,11 @@ Winterbird is a programming language, which is still in development.
     cmpfl    X Y   - sets test flag if X < Y. (float)
     cmpfi    X     - sets test flag if X is infinity.
     cmpfn    X     - sets test flag if X is NaN.
-    cmpf32z    X   - sets test flag if X is zero. (float32)
-    cmpf32g    X Y - sets test flag if X > Y. (float32)
-    cmpf32l    X Y - sets test flag if X < Y. (float32)
-    cmpf32i    X   - sets test flag if X is infinity. (float32)
-    cmpf32n    X   - sets test flag if X is NaN. (float32)
+    cmpf32z  X     - sets test flag if X is zero. (float32)
+    cmpf32g  X Y   - sets test flag if X > Y. (float32)
+    cmpf32l  X Y   - sets test flag if X < Y. (float32)
+    cmpf32i  X     - sets test flag if X is infinity. (float32)
+    cmpf32n  X     - sets test flag if X is NaN. (float32)
 
     cmpul    X Y   - sets test flag if X < Y. (unsigned)
     cmpug    X Y   - sets test flag if X > Y. (unsigned)

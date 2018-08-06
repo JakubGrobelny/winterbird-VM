@@ -32,9 +32,9 @@ void fprintf_bytes64(FILE* stream, uint64_t val)
 void fprintf_bytes32(FILE* stream, uint32_t val)
 {
     fprintf(stream, "%02hhx %02hhx %02hhx %02hhx",
-                    (uint8_t)val >> 24,
-                    (uint8_t)val >> 16,
-                    (uint8_t)val >> 8,
+                    (uint8_t)(val >> 24),
+                    (uint8_t)(val >> 16),
+                    (uint8_t)(val >> 8),
                     (uint8_t)val);
 }
 

@@ -1,4 +1,4 @@
-COMPILER = gcc
+COMPILER = clang
 FLAGS = -g -Wall -Wextra -std=c11 -O0 -pedantic-errors
 
 TARGET = bin/wbvm

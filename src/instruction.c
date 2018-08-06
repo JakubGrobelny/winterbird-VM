@@ -5,6 +5,6 @@ instruction_t create_instruction(opcode_t opcode,
                                  value_t  op1, 
                                  value_t  op2)
 {
-    instruction_t instr = {{op1, op2}, opcode, opmode};
+    instruction_t instr = {opcode, opmode, {op1, op2}};
     return instr;
 }
