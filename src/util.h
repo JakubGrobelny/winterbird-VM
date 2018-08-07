@@ -1,3 +1,12 @@
+/*
+
+    Winterbird Virtual Machine
+    Copyright (c) 2018 Jakub Grobelny
+    Distributed under the MIT License
+    http://opensource.org/licenses/MIT
+
+*/
+
 #ifndef UTIL_H
 #define UTIL_H
 

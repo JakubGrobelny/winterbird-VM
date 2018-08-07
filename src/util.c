@@ -1,3 +1,12 @@
+/*
+
+    Winterbird Virtual Machine
+    Copyright (c) 2018 Jakub Grobelny
+    Distributed under the MIT License
+    http://opensource.org/licenses/MIT
+
+*/
+
 #include "util.h"
 
 uint64_t rotate_left(uint64_t val, uint64_t amount)
