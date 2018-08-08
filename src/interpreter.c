@@ -9,6 +9,7 @@
 
 #include "interpreter.h"
 #include "vmsyscalls.h"
+#include "foreign_functions.h"
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -454,6 +455,18 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
         case OP_ARGVG:
             op1->ptr = memory->argv[op2->u64];
             break;
+        case OP_FLOAD:
+        {
+            funptr_t funct = import_foreign_function("./tests/dl_tests/testlib.so",
+                                                  "testfun");
+
+            if (!was_error())
+            {
+                (funct.void_void)();
+            }
+
+            break;
+        }
     // === DEFAULT === //
         default:
             report_error(INVALID_OPCODE, NULL);

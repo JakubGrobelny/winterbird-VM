@@ -51,6 +51,12 @@ inline void throw_error(void)
         case INVALID_OPCODE:
             fprintf(stderr, "INVALID_OPCODE");
             break;
+        case DLOPEN_FAIL:
+            fprintf(stderr, "DLOPEN_FAIL");
+            break;
+        case DLSYM_FAIL:
+            fprintf(stderr, "DLSYM_FAIL");
+            break;
         default:
             fprintf(stderr, "ERROR(nodescr)!");
         break;

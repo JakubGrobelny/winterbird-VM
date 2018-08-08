@@ -1,13 +1,21 @@
-#include "vmsyscalls.h"
+/*
+
+    Winterbird Virtual Machine
+    Copyright (c) 2018 Jakub Grobelny
+    Distributed under the MIT License
+    http://opensource.org/licenses/MIT
+
+*/#include "vmsyscalls.h"
 
 #include <stdio.h>
-#include <dlfcn.h>
 
-void hello_world(memory_t* memory)
+void free_allocs(memory_t* memory)
 {
-    printf("Hello world!\n");
+    for (size_t i = 0; i < memory->allocated_ptrs.size; i++)
+        tracked_free(&memory->allocated_ptrs, memory->allocated_ptrs.ptrs[i].ptr);
+
 }
 
 syscall_t syscalls[] = {
-    hello_world
+    free_allocs
 };

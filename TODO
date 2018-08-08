@@ -11,6 +11,8 @@ TODO:
 25. Opened files registry
 26. fix stack (faster version had a bug)
 27. add separate alloc instruction that uses garbage collection
+28. think of a way to have generic functions that take any amount of arguments
+29. create lib handles list that would count references
 
 DONE:
 2. add OP_FWRITEB instruction (write byte)

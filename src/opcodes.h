@@ -122,7 +122,8 @@ typedef enum
     OP_GETCH   = 0x050E,
     OP_PUTCH   = 0x060E,
     OP_ARGCG   = 0x070E,
-    OP_ARGVG   = 0x080F,
+    OP_ARGVG   = 0x080E,
+    OP_FLOAD   = 0x090E
 
     // described in README.mb
 
