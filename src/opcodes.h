@@ -30,6 +30,7 @@ typedef enum
     OP_PUSH32  = 0x0101,
     OP_PUSH16  = 0x0201,
     OP_PUSH8   = 0x0301,
+    OP_DUPL    = 0x0401,
 
     OP_POP64   = 0x0002,
     OP_POP32   = 0x0102,

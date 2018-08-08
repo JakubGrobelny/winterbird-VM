@@ -8,6 +8,7 @@
 */
 
 #include "interpreter.h"
+#include "vmsyscalls.h"
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -181,6 +182,9 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
             break;
         case OP_PUSH64:
             stack_push(memory, *op1, SIZE_64);
+            break;
+        case OP_DUPL:
+            stack_duplicate(memory, op1->u64);
             break;
         case OP_POP8:
             op1->u64 = stack_pop(memory, SIZE_8).u64;
@@ -428,8 +432,12 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
             memory->halt = true;
             break;
         case OP_SYSCALL:
-            //TODO: implement
-            assert(false && "OP_SYSCALL undefined");
+            if (op1->u64 >= SYSCALLS_SIZE)
+            {
+                report_error(INVALID_SYSCALL, NULL);
+                break;
+            }
+            syscalls[op1->u64](memory);
             break;
         case OP_DEBUG:
             print_stack_trace(memory, op1->u32);

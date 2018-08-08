@@ -25,6 +25,7 @@ typedef enum
     INVALID_FILE_MODE,
     UNALLOCATED_FREE,
     ALLOC_FAILURE,
+    INVALID_SYSCALL
 
 } error_flag_t;
 

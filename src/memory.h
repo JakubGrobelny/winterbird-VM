@@ -45,7 +45,7 @@ typedef struct
     #endif
 
     size_t argc;
-    char** argv;
+    char** argv;    
 
 } memory_t;
 
@@ -65,6 +65,7 @@ void free_memory(memory_t* memory);
 value_t* get_pointer_from_operand(memory_t* memory, instruction_t* instruction, uint8_t operand_id);
 void stack_push(memory_t* memory, value_t value, word_size_t size);
 value_t stack_pop(memory_t* memory, word_size_t size);
+void stack_duplicate(memory_t* memory, size_t bytes);
 void print_stack_trace(memory_t* memory, uint32_t what);
 
 #endif

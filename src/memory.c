@@ -1,3 +1,4 @@
+
 /*
 
     Winterbird Virtual Machine
@@ -54,8 +55,11 @@ bool initialize_memory(memory_t* memory, uint64_t stack_megabytes,
 
 void stack_push(memory_t* memory, value_t value, word_size_t size)
 {
-    if (memory->stack_ptr + size > memory->stack_ptr + memory->stack_size)
+    if (memory->stack_ptr + size > memory->stack + memory->stack_size)
+    {
         report_error(STACK_OVERFLOW, NULL);
+        return;
+    }
 
     value_t* ptr = (void*)memory->stack_ptr;
 
@@ -84,7 +88,12 @@ void stack_push(memory_t* memory, value_t value, word_size_t size)
 value_t stack_pop(memory_t* memory, word_size_t size)
 {
     if (memory->stack_ptr < memory->stack + size)
+    {
         report_error(STACK_UNDERFLOW, NULL);
+        value_t return_val;
+        return_val.u64 = 0;
+        return return_val;
+    }
 
     memory->stack_ptr -= size;
     value_t* ptr = (void*)memory->stack_ptr;
@@ -110,6 +119,24 @@ value_t stack_pop(memory_t* memory, word_size_t size)
     }
 
     return result;
+}
+
+void stack_duplicate(memory_t* memory, size_t bytes)
+{
+    if (memory->stack_ptr + bytes > memory->stack + memory->stack_size)
+    {
+        report_error(STACK_OVERFLOW, NULL);
+        return;
+    }
+
+    if (memory->stack_ptr - bytes < memory->stack)
+    {
+        report_error(STACK_UNDERFLOW, NULL);
+        return;
+    }
+
+    memcpy(memory->stack_ptr, memory->stack_ptr - bytes, bytes);
+    memory->stack_ptr += bytes;
 }
 
 void free_memory(memory_t* memory)
@@ -176,7 +203,7 @@ bool load_program(memory_t* memory, char* path)
     if (!file)
         return false;
 
-    /* Winterbird bytecode file (.wb):
+    /* Winterbird bytecode file (.wbx):
         8 bytes                     -- size of unitialized .data section
         8 bytes                     -- size of initialized .data section
         8 bytes                     -- size of .text (number of instructions)

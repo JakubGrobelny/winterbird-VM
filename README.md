@@ -126,5 +126,9 @@ Winterbird is a programming language, which is still in development.
                         stderr if Y == 1
     argcg    X     - sets X to the value indicating number of command line arguments
     argvg    X Y   - sets X to Y-th command line argument pointer
+    
+    syscall  X     - calls a C function registered in VM with index X
+    dupl     X     - copies X bytes from the top of the stack and 
+                        pushes them to the stack 
 
 No size:
