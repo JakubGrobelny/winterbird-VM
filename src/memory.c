@@ -50,6 +50,12 @@ bool initialize_memory(memory_t* memory, uint64_t stack_megabytes,
                  ? argv
                  : NULL;
 
+    if (!init_lib_handles(&memory->dl_lib_handles))
+        return false;
+
+    if (!init_funct_list(&memory->dl_funct_ptrs))
+        return false;
+
     return memory->stack;
 }
 
@@ -153,6 +159,10 @@ void free_memory(memory_t* memory)
     #ifdef SEPARATE_CALL_STACK
         free_call_stack(&memory->call_stack);
     #endif
+
+    free_lib_handles(&memory->dl_lib_handles);
+
+    free_funct_ptrs(&memory->dl_funct_ptrs);
 }
 
 value_t* get_pointer_from_operand(memory_t* memory, instruction_t* instruction, uint8_t operand_id)

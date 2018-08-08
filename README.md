@@ -1,23 +1,18 @@
 # WBVM - Winterbird Virtual Machine
 
-##What is it?
+## What is it?
 wbvm is an interpreter for IR bytecode produced by Winterbird language compiler. It can (will in the future) also assemble, link and run programs written in wbASM (Winterbird assembler).
 
-##What is Winterbird?
+## What is Winterbird?
 Winterbird is a programming language, which is still in development.
 
-##Technical data:
-- 128 64-bit registers
-- flexible stack size (8 MB by default)
-- float/integer/unsigned/pointer data types
-
-##Operand modes:
+## Operand modes:
 - register: $reg
 - register dereference : (\$reg + $idx * scale + offset)
 - 64-bit value: value
 - 64-bit address dereference: *value
 
-##Instruction set:
+## Instruction set:
 (some instructions have many variants that take operand sizes into consideration [eg. mov64 and mov32]. All of them operate on signed integers unless stated otherwise).
 
     name operands - description
@@ -127,8 +122,48 @@ Winterbird is a programming language, which is still in development.
     argcg    X     - sets X to the value indicating number of command line arguments
     argvg    X Y   - sets X to Y-th command line argument pointer
     
-    syscall  X     - calls a C function registered in VM with index X
     dupl     X     - copies X bytes from the top of the stack and 
                         pushes them to the stack 
+    // dynamic library interface:
+    reglib   X Y    - creates a handle to library Y and sets X to the
+                        id of the library in the VM. IDs always start at 0
+                        and increase by one, so the calls can use constants
+                        for function/handle IDs (if reglib/regfun order is 
+                        predictable)
+    regfun   X Y    - loads a pointer to function Y from the library with id X
+    rmvlib   X      - closes library handle with id X 
+    syscall  X      - calls registered functon X with the arguments
+                        in registers and on the stack
 
-No size:
+## Dynamic library interface:
+
+    Note: it's not foreign function interface. All functions should
+          be written with the VM in mind.
+
+    The VM can dynamically load .so files and call functions. Every
+    external library should use following function signatures:
+
+    uint8_t* foo(uint8_t* stackptr, uint64_t* regfile, size_t stack_size_left);
+
+    VM will pass the stack pointer, register file pointer and the amount
+    of space left on the stack (in bytes) to the function. Function
+    should read its arguments from the stack and registers, and its documentation
+    should specify the convention of passing the arguments.
+    
+    The value returned by the function should be the new stack pointer.
+    The VM sets the stack pointer to the result of the call, so that the
+    program can calculate how much data has been pushed and read the result
+    from the stack.
+
+    Functions are allowed to alter the values on the stack and in the registers,
+    but it may be unsafe. Altered values should be specified in the documentation.
+
+    If there is an exception, the function should return 0 (NULL) and set
+    a register specified in its documentation to error code (specified in
+    documentation);
+
+    Caller should always save stack pointer before calling an external function
+    and compare it with the new stack pointer.
+
+    External libraries allow for easy wrapping of other libraries into
+    Winterbird libraries.

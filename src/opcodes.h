@@ -123,7 +123,9 @@ typedef enum
     OP_PUTCH   = 0x060E,
     OP_ARGCG   = 0x070E,
     OP_ARGVG   = 0x080E,
-    OP_FLOAD   = 0x090E
+    OP_REGLIB  = 0x090E,
+    OP_REGFUN  = 0x0A0E,
+    OP_RMVLIB  = 0x0B0E
 
     // described in README.mb
 

@@ -9,7 +9,6 @@
 
 #include "interpreter.h"
 #include "vmsyscalls.h"
-#include "foreign_functions.h"
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -432,14 +431,6 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
             memory->return_value = op1->i64;
             memory->halt = true;
             break;
-        case OP_SYSCALL:
-            if (op1->u64 >= SYSCALLS_SIZE)
-            {
-                report_error(INVALID_SYSCALL, NULL);
-                break;
-            }
-            syscalls[op1->u64](memory);
-            break;
         case OP_DEBUG:
             print_stack_trace(memory, op1->u32);
             break;
@@ -455,18 +446,36 @@ void run_instruction(memory_t* memory, instruction_t* instruction)
         case OP_ARGVG:
             op1->ptr = memory->argv[op2->u64];
             break;
-        case OP_FLOAD:
+        case OP_SYSCALL:
         {
-            funptr_t funct = import_foreign_function("./tests/dl_tests/testlib.so",
-                                                  "testfun");
-
-            if (!was_error())
+            funct_ptr_t function;
+            
+            if (op1->u64 >= memory->dl_funct_ptrs.size)
             {
-                (funct.void_void)();
+                report_error(INVALID_SYSCALL, NULL);
+                break;
             }
+            
+            function = memory->dl_funct_ptrs.entries[op1->u64].ptr;
+            
+            uint8_t* retptr = function(memory->stack_ptr, 
+                            (uint64_t*)&memory->registers, 
+                            memory->stack_size - (memory->stack_ptr - memory->stack));
+
+            memory->stack_ptr = retptr;
 
             break;
         }
+        case OP_REGLIB:
+            op1->u64 = reglib((char*)op2->ptr, &memory->dl_lib_handles);
+            break;
+        case OP_REGFUN:
+            op1->u64 = regfun(op1->u64, (char*)op2->ptr, &memory->dl_lib_handles,
+                              &memory->dl_funct_ptrs);
+            break;
+        case OP_RMVLIB:
+            remove_lib(op1->u64, &memory->dl_lib_handles, &memory->dl_funct_ptrs);
+            break;
     // === DEFAULT === //
         default:
             report_error(INVALID_OPCODE, NULL);

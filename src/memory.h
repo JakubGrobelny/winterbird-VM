@@ -16,6 +16,7 @@
 #include "program.h"
 #include "alloc.h"
 #include "call_stack.h"
+#include "vmsyscalls.h"
 
 typedef struct
 {
@@ -45,7 +46,10 @@ typedef struct
     #endif
 
     size_t argc;
-    char** argv;    
+    char** argv;
+
+    lib_handles_list_t dl_lib_handles;
+    funct_ptrs_list_t  dl_funct_ptrs;
 
 } memory_t;
 
